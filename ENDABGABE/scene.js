@@ -3,7 +3,7 @@ const arBtn = document.querySelector("#ar-button");
 
 let buttonVisible = false;
 
-
+// Marker erkannt → Button anzeigen
 marker.addEventListener("markerFound", () => {
   arBtn.style.display = "block";
   buttonVisible = true;
@@ -16,5 +16,13 @@ marker.addEventListener("markerLost", () => {
 });
 
 
+arBtn.addEventListener("click", () => {
+  if (!buttonVisible) return;
+  alert("🎉 Start gedrückt!");
+});
 
+arBtn.addEventListener("touchstart", () => {
+  if (!buttonVisible) return;
+  alert("🎉 Start gedrückt!");
+});
 
