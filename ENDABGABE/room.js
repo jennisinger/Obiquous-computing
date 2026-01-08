@@ -1,3 +1,10 @@
+document.addEventListener("DOMContentLoaded", () => {
+  const egg = document.getElementById("egg");
+  egg.addEventListener("click", () => {
+    console.log("Ei geklickt");
+  });
+});
+
 const marker = document.querySelector("#marker");
 const arBtn = document.querySelector("#ar-button");
 
@@ -22,3 +29,4 @@ arBtn.addEventListener("touchstart", () => {
   if (!buttonVisible) return;
   window.location.href = "room.html";
 });
+
