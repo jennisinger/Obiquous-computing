@@ -16,13 +16,5 @@ marker.addEventListener("markerLost", () => {
 });
 
 
-arBtn.addEventListener("click", () => {
-  if (!buttonVisible) return;
-  alert("🎉 Start gedrückt!");
-});
 
-arBtn.addEventListener("touchstart", () => {
-  if (!buttonVisible) return;
-  alert("🎉 Start gedrückt!");
-});
 
