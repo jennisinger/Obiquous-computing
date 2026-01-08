@@ -12,13 +12,13 @@ html, body {
   width: 100vw;
 }
 
-/* Raum */
+/* Spielfläche */
 #play-area {
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  background:#b7e3ff;
+  background: #b7e3ff; /* hier kannst du noch ein Raum-Bild einfügen */
   position: relative;
   overflow: hidden;
 }
@@ -27,22 +27,37 @@ html, body {
 #egg {
   width: 1000px;
   cursor: pointer;
-  transition: transform 0.3s ease;
   z-index: 2;
+  bottom: 20%;
+  transition: transform 0.3s ease;
 }
 
 #egg:hover {
   transform: scale(1.1);
 }
 
-/* Video-Animation */
-#egg-video {
-  display: none;
-  width: 240px;
-  z-index: 3;
+/* Animation: Ei wackelt/pulsiert */
+@keyframes shake {
+  0%   { transform: rotate(0deg) scale(1); }
+  25%  { transform: rotate(5deg) scale(1.05); }
+  50%  { transform: rotate(-5deg) scale(1.1); }
+  75%  { transform: rotate(5deg) scale(1.05); }
+  100% { transform: rotate(0deg) scale(1); }
 }
 
-/* Pet (für später) */
-#pet img {
-  width: 160px;
+.egg-hatching {
+  animation: shake 1.2s ease-in-out forwards;
 }
+
+/* Tier */
+#pet {
+  width: 40%; /* skaliert relativ zur Bildschirmbreite */
+  max-width: 1000px; /* maximale Größe */
+  position: absolute;
+  left: 50%; /* horizontal zentriert */
+  bottom: 23%; /* auf dem grünen Boden platzieren */
+  transform: translateX(-50%); /* genaue Zentrierung */
+  z-index: 3;
+  display: none; /* erst sichtbar nach Ei-Click */
+}
+

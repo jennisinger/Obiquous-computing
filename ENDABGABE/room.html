@@ -5,38 +5,23 @@
   <title>AR Pet – Spiel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="room.css">
-  <script src="room.js"></script>
+  <script src="room.js" defer></script>
 </head>
 <body>
 
   <div id="container">
-
     <!-- Spielfläche / Raum -->
     <div id="play-area">
-
       <!-- Ei (klickbar) -->
-      <img
-        id="egg"
-        src="assets/egg.png"
-        alt="Rosa Ei"
-      >
+      <img id="egg" src="assets/egg.png" alt="Rosa Ei">
 
-      <!-- Ei-Animation (initial versteckt) -->
-      <video
-        id="egg-video"
-        src="assets/egg_hatching_animation.mp4"
-        playsinline
-        muted
-      ></video>
-
-      <!-- Pet (für später) -->
-      <div id="pet"></div>
-
+      <!-- Tier (initial versteckt) -->
+      <img id="pet" src="assets/bear.png" alt="Tier" style="display: none;">
     </div>
-
   </div>
 
 </body>
 </html>
+
 
 
