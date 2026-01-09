@@ -26,7 +26,7 @@ html, body {
 
 /* Ei */
 #egg {
-  width: min(70vw, 700px);
+  width: min(70vw, 1000px);
   height: auto;
 
   position: absolute;
@@ -72,7 +72,7 @@ html, body {
 
 /* Tier */
 #pet {
-  width: min(70vw, 700px);
+  width: min(70vw, 1000px);
   height: auto;
 
   position: absolute;
