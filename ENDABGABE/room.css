@@ -49,15 +49,21 @@ html, body {
   animation: shake 1.2s ease-in-out forwards;
 }
 
-/* Tier */
 #pet {
-  width: 40%; /* skaliert relativ zur Bildschirmbreite */
-  max-width: 1000px; /* maximale Größe */
   position: absolute;
-  left: 50%; /* horizontal zentriert */
-  bottom: 23%; /* auf dem grünen Boden platzieren */
-  transform: translateX(-50%); /* genaue Zentrierung */
+  left: 50%;
+  bottom: 23%;
+  transform: translateX(-50%);
+  width: min(70vw, 700px);
   z-index: 3;
-  display: none; /* erst sichtbar nach Ei-Click */
+  display: none;
+
+  display: flex;
+  justify-content: center;
+}
+#pet img {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
