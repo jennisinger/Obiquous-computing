@@ -15,5 +15,16 @@ marker.addEventListener("markerLost", () => {
   buttonVisible = false;
 });
 
+arBtn.addEventListener("click", () => {
+  if (!buttonVisible) return;
+  window.location.href =
+    "https://jennisinger.github.io/Obiquous-computing/ENDABGABE/room.html";
+});
+
+arBtn.addEventListener("touchstart", () => {
+  if (!buttonVisible) return;
+  window.location.href =
+    "https://jennisinger.github.io/Obiquous-computing/ENDABGABE/room.html";
+});
 
 
