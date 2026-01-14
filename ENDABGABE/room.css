@@ -135,3 +135,86 @@ html, body {
 .side-btn:active {
   transform: scale(0.95);
 }
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --sidebar-w: 68px;
+  --sidebar-gap: 12px;
+}
+
+/* Damit das Zentrum der Spiel-Fläche nicht von den Sidebars überlappt wird */
+#play-area {
+  padding-left: calc(var(--sidebar-w) + var(--sidebar-gap));
+  padding-right: calc(var(--sidebar-w) + var(--sidebar-gap));
+  box-sizing: border-box;
+}
+
+
+/* Sichtbarkeit über Klasse steuern (statt inline display) */
+.sidebar.visible {
+  display: flex;
+}
+
+/* Pet sichtbar machen per Klasse */
+#pet.shown {
+  display: block;
+}
+
+/* Mobile-Anpassungen */
+@media (max-width: 600px) {
+  :root { --sidebar-w: 56px; --sidebar-gap: 8px; }
+
+  html, body { overflow-x: hidden; }
+
+  /* Play-area auf Mobilbildschirm keinen extra horizontalen Padding geben */
+  #play-area {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* Sidebars als Floating-Bar nur wenn sie die Klasse .visible haben */
+  .sidebar {
+    position: fixed;
+    top: auto;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    /* display bleiben standardmäßig none, sichtbar durch .visible */
+    flex-direction: row;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 999px;
+    width: auto;
+    z-index: 20;
+    align-items: center;
+  }
+
+  /* Wenn sichtbar, sollen sie als Reihe angezeigt werden */
+  .sidebar.visible {
+    display: flex;
+    flex-direction: row;
+  }
+
+  #sidebar-left, #sidebar-right {
+    left: auto;
+    right: auto;
+  }
+
+  .side-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+    border-radius: 10px;
+  }
+
+  /* Ei / Tier anpassen, damit sie nicht von der Bottom-Bar überlappt werden */
+  #egg, #pet {
+    width: min(82vw, 420px);
+    bottom: 20%;
+  }
+
+  #egg::after { inset: -12%; }
+}
+

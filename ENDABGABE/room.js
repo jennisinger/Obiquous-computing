@@ -2,26 +2,26 @@ document.addEventListener("DOMContentLoaded", () => {
   const egg = document.getElementById("egg");
   const pet = document.getElementById("pet");
 
-  // Neue Sidebars erstellen
+    // Neue Sidebars erstellen
   const sidebarLeft = document.createElement("div");
   sidebarLeft.id = "sidebar-left";
   sidebarLeft.className = "sidebar";
   sidebarLeft.innerHTML = `
-    <button>Füttern</button>
-    <button>Streicheln</button>
-    <button>Schlafen</button>
+    <button class="side-btn">Füttern</button>
+    <button class="side-btn">Streicheln</button>
+    <button class="side-btn">Schlafen</button>
   `;
-  sidebarLeft.style.display = "none"; // erst nach Schlüpfen sichtbar
+  // sidebarLeft.style.display = "none"; // entfernt: Sichtbarkeit per Klasse steuern
   document.getElementById("play-area").appendChild(sidebarLeft);
 
   const sidebarRight = document.createElement("div");
   sidebarRight.id = "sidebar-right";
   sidebarRight.className = "sidebar";
   sidebarRight.innerHTML = `
-    <button onclick="window.location.href='tictactoe.html'">Tic Tac Toe</button>
-    <button>Singen</button>
+    <button class="side-btn" onclick="window.location.href='tictactoe.html'">Tic Tac Toe</button>
+    <button class="side-btn">Singen</button>
   `;
-  sidebarRight.style.display = "none"; // erst nach Schlüpfen sichtbar
+  // sidebarRight.style.display = "none"; // entfernt: Sichtbarkeit per Klasse steuern
   document.getElementById("play-area").appendChild(sidebarRight);
 
   // Pop-Up Hinweis
@@ -33,16 +33,18 @@ document.addEventListener("DOMContentLoaded", () => {
     // Ei Animation starten
     egg.classList.add("egg-hatching");
 
-    // Nach Ende der Animation: Ei weg, Tier zeigen, Sidebars anzeigen
-    setTimeout(() => {
-      egg.style.display = "none";
-      pet.style.display = "block";
-
-      sidebarLeft.style.display = "flex";
-      sidebarRight.style.display = "flex";
+ setTimeout(() => {
+-      egg.style.display = "none";
+-      pet.style.display = "block";
+-
+-      sidebarLeft.style.display = "flex";
+-      sidebarRight.style.display = "flex";
++      egg.classList.add("hidden");
++      pet.classList.add("shown");
++
++      sidebarLeft.classList.add("visible");
++      sidebarRight.classList.add("visible");
     }, 1200);
-  });
-});
 
 // Canvas-Hintergrund bleibt unverändert
 document.addEventListener("DOMContentLoaded", () => {
