@@ -49,29 +49,37 @@ document.addEventListener("DOMContentLoaded", () => {
   pet.classList.add("hidden");
   egg.classList.remove("hidden");
 
-
-
 egg.addEventListener("click", () => {
-  // Verhindern, dass die Animation mehrfach gestartet wird
+  // Guard: nicht nochmal starten, wenn's schon läuft oder Ei versteckt ist
   if (egg.classList.contains("hidden") || egg.classList.contains("egg-hatching")) return;
 
+  // Starte Wackel-Animation
   egg.classList.add("egg-hatching");
 
+  let finished = false;
   const finishHatch = () => {
+    if (finished) return;
+    finished = true;
+
     // Animation beendet → Ei verbergen, Pet zeigen, Sidebars einblenden
     egg.classList.add("hidden");
     egg.classList.remove("egg-hatching");
 
-    pet.classList.remove("hidden");
-    pet.classList.add("shown");
+    if (pet) {
+      pet.classList.remove("hidden");
+      pet.classList.add("shown");
+    }
 
     if (typeof sidebarLeft !== "undefined" && sidebarLeft) sidebarLeft.classList.add("visible");
     if (typeof sidebarRight !== "undefined" && sidebarRight) sidebarRight.classList.add("visible");
   };
 
-  // Auf animationend warten (einmalig)
+  // Event-driven Ende + WebKit-Fallback
   egg.addEventListener("animationend", finishHatch, { once: true });
   egg.addEventListener("webkitAnimationEnd", finishHatch, { once: true });
+
+  // Sicherheits-Fallback falls animationend nicht kommt
+  setTimeout(finishHatch, 1600);
 });
 
 

@@ -218,3 +218,13 @@ html, body {
   #egg::after { inset: -12%; }
 }
 
+
+/* Sichtbarkeitsklassen */
+#egg.hidden { display: none !important; }
+#pet.hidden { display: none !important; }
+#pet.shown { display: block !important; }
+
+/* sicherstellen, dass das Ei während der Animation oben liegt */
+#egg { z-index: 6; }
+#pet { z-index: 3; }
+
