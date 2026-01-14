@@ -1,82 +1,113 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const egg = document.getElementById("egg");
-  const pet = document.getElementById("pet");
-
-    // Neue Sidebars erstellen
-  const sidebarLeft = document.createElement("div");
-  sidebarLeft.id = "sidebar-left";
-  sidebarLeft.className = "sidebar";
-  sidebarLeft.innerHTML = `
-    <button class="side-btn">Füttern</button>
-    <button class="side-btn">Streicheln</button>
-    <button class="side-btn">Schlafen</button>
-  `;
-  // sidebarLeft.style.display = "none"; // entfernt: Sichtbarkeit per Klasse steuern
-  document.getElementById("play-area").appendChild(sidebarLeft);
-
-  const sidebarRight = document.createElement("div");
-  sidebarRight.id = "sidebar-right";
-  sidebarRight.className = "sidebar";
-  sidebarRight.innerHTML = `
-    <button class="side-btn" onclick="window.location.href='tictactoe.html'">Tic Tac Toe</button>
-    <button class="side-btn">Singen</button>
-  `;
-  // sidebarRight.style.display = "none"; // entfernt: Sichtbarkeit per Klasse steuern
-  document.getElementById("play-area").appendChild(sidebarRight);
-
-  // Pop-Up Hinweis
-  alert("Klicke auf das Ei, um dein Tier zu schlüpfen!");
-
-  egg.addEventListener("click", () => {
-    console.log("Ei geklickt");
-
-    // Ei Animation starten
-    egg.classList.add("egg-hatching");
-
- setTimeout(() => {
--      egg.style.display = "none";
--      pet.style.display = "block";
--
--      sidebarLeft.style.display = "flex";
--      sidebarRight.style.display = "flex";
-+      egg.classList.add("hidden");
-+      pet.classList.add("shown");
-+
-+      sidebarLeft.classList.add("visible");
-+      sidebarRight.classList.add("visible");
-    }, 1200);
-
-// Canvas-Hintergrund bleibt unverändert
-document.addEventListener("DOMContentLoaded", () => {
   const playArea = document.getElementById("play-area");
+  const egg = document.getElementById("egg");
+  // Falls mehrere Elemente mit id="pet" existieren: nur erstes behalten
+  const petNodes = document.querySelectorAll("#pet");
+  let pet = petNodes[0] || null;
+  if (petNodes.length > 1) {
+    for (let i = 1; i < petNodes.length; i++) petNodes[i].remove();
+  }
 
+  // Hinweis: Alert optional, daher entfernt (stört Mobile-Tests)
+  // Falls pet nicht vorhanden ist, erstelle fallback (img)
+  if (!pet) {
+    pet = document.createElement("img");
+    pet.id = "pet";
+    pet.src = "assets/bear.png";
+    pet.alt = "Tier";
+    pet.classList.add("hidden");
+    playArea.appendChild(pet);
+  }
+
+  // Hole vorhandene Sidebars oder erstelle nur falls nicht vorhanden
+  function getOrCreateSidebar(id, html) {
+    let el = document.getElementById(id);
+    if (!el) {
+      el = document.createElement("div");
+      el.id = id;
+      el.className = "sidebar";
+      el.innerHTML = html;
+      playArea.appendChild(el);
+    }
+    return el;
+  }
+
+  const sidebarLeft = getOrCreateSidebar("sidebar-left", `
+    <button class="side-btn" id="feed">🍎</button>
+    <button class="side-btn" id="petting">💛</button>
+    <button class="side-btn" id="sleep">💤</button>
+  `);
+
+  const sidebarRight = getOrCreateSidebar("sidebar-right", `
+    <button class="side-btn" id="tic-tac-toe" onclick="window.location.href='tictactoe.html'">❌⭕</button>
+    <button class="side-btn" id="sing">🎤</button>
+  `);
+
+  // Stelle sicher, dass Sidebars initial versteckt sind (CSS sollte .sidebar { display:none })
+  sidebarLeft.classList.remove("visible");
+  sidebarRight.classList.remove("visible");
+  pet.classList.add("hidden");
+  egg.classList.remove("hidden");
+
+
+
+egg.addEventListener("click", () => {
+  // Verhindern, dass die Animation mehrfach gestartet wird
+  if (egg.classList.contains("hidden") || egg.classList.contains("egg-hatching")) return;
+
+  egg.classList.add("egg-hatching");
+
+  const finishHatch = () => {
+    // Animation beendet → Ei verbergen, Pet zeigen, Sidebars einblenden
+    egg.classList.add("hidden");
+    egg.classList.remove("egg-hatching");
+
+    pet.classList.remove("hidden");
+    pet.classList.add("shown");
+
+    if (typeof sidebarLeft !== "undefined" && sidebarLeft) sidebarLeft.classList.add("visible");
+    if (typeof sidebarRight !== "undefined" && sidebarRight) sidebarRight.classList.add("visible");
+  };
+
+  // Auf animationend warten (einmalig)
+  egg.addEventListener("animationend", finishHatch, { once: true });
+  egg.addEventListener("webkitAnimationEnd", finishHatch, { once: true });
+});
+
+
+  // Canvas-Hintergrund (responsiv)
   const canvas = document.createElement("canvas");
   canvas.id = "bg-canvas";
-  canvas.width = playArea.offsetWidth;
-  canvas.height = playArea.offsetHeight;
   canvas.style.position = "absolute";
-  canvas.style.top = 0;
-  canvas.style.left = 0;
-  canvas.style.zIndex = 0;
-  playArea.appendChild(canvas);
-
+  canvas.style.top = "0";
+  canvas.style.left = "0";
+  canvas.style.zIndex = "0";
+  playArea.prepend(canvas);
   const ctx = canvas.getContext("2d");
 
-  window.addEventListener("resize", () => {
-    canvas.width = playArea.offsetWidth;
-    canvas.height = playArea.offsetHeight;
+  function resizeCanvas() {
+    const w = playArea.offsetWidth;
+    const h = playArea.offsetHeight;
+    canvas.width = w;
+    canvas.height = h;
+    canvas.style.width = w + "px";
+    canvas.style.height = h + "px";
     drawBackground();
-  });
+  }
+
+  window.addEventListener("resize", resizeCanvas);
+  resizeCanvas();
 
   function drawBackground() {
     const w = canvas.width;
     const h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
 
     ctx.fillStyle = "#b7e3ff";
-    ctx.fillRect(0, 0, w, h * 0.7);
+    ctx.fillRect(0, 0, w, Math.floor(h * 0.7));
 
     ctx.fillStyle = "#2e7d32";
-    ctx.fillRect(0, h * 0.7, w, h * 0.3);
+    ctx.fillRect(0, Math.floor(h * 0.7), w, Math.ceil(h * 0.3));
 
     ctx.fillStyle = "white";
     drawCloud(ctx, w * 0.2, h * 0.1, 60, 40);
@@ -114,7 +145,4 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.fillStyle = "#d32f2f";
     ctx.fill();
   }
-
-  drawBackground();
 });
-
