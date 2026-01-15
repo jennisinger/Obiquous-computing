@@ -158,14 +158,14 @@ egg.addEventListener("click", () => {
   // Stats-Werte (0-100)
   let stats = {
     hunger: 100,
-    tiredness: 100,
+    energy: 100,
     happiness: 100
   };
 
   // Funktion zum Aktualisieren der Balken
   function updateStats() {
     document.getElementById("hunger-fill").style.width = stats.hunger + "%";
-    document.getElementById("tiredness-fill").style.width = stats.tiredness + "%";
+    document.getElementById("energy-fill").style.width = stats.energy + "%";
     document.getElementById("happiness-fill").style.width = stats.happiness + "%";
   }
 
@@ -187,7 +187,7 @@ egg.addEventListener("click", () => {
   // Beispiel: Stats langsam über Zeit verschlechtern
   setInterval(() => {
     changeStat("hunger", -3);   // Hunger sinkt um 3
-    changeStat("tiredness", -2); // Müdigkeit sinkt um 2
+    changeStat("energy", -2); // Müdigkeit sinkt um 2
     changeStat("happiness", -2); // Glück sinkt um 2
   }, 5000); // Alle 5 Sekunden
 });
