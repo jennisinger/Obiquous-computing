@@ -92,7 +92,7 @@ html, body {
   gap: 12px;
   padding: 12px;
   border-radius: 16px;
-  background: #88c0e5;
+  background: linear-gradient(145deg, #ffffff, #e0e0e0);
   box-shadow: 4px 4px 10px rgba(0,0,0,0.15),
               inset -2px -2px 6px rgba(255,255,255,0.7);
   z-index: 5;
@@ -109,7 +109,7 @@ html, body {
   gap: 30px;
   padding: 16px 24px;
   border-radius: 12px;
-  background: #ffffff;
+  background: linear-gradient(145deg, #ffffff, #f5f5f5);
   box-shadow: 4px 4px 12px rgba(0,0,0,0.1),
               inset -2px -2px 6px rgba(255,255,255,0.9);
   z-index: 10;
@@ -133,7 +133,7 @@ html, body {
 .stat-bar {
   width: 100px;
   height: 20px;
-  background: #f0f0f0;
+  background: linear-gradient(145deg, #e0e0e0, #f0f0f0);
   border-radius: 10px;
   overflow: hidden;
   border: 2px solid #ccc;
@@ -143,22 +143,22 @@ html, body {
 .stat-fill {
   height: 100%;
   width: 100%;
-  background: #f0f0f0;
+  background: linear-gradient(90deg, #ff6b6b, #ff8787);
   transition: width 0.3s ease;
   border-radius: 8px;
 }
 
 /* Unterschiedliche Farben für verschiedene Stats */
 #hunger-fill {
-  background: #ffca7a !important;
+  background: linear-gradient(90deg, #ffa500, #ffb84d) !important;
 }
 
 #tiredness-fill {
-  background: #6b6dba !important;
+  background: linear-gradient(90deg, #9b59b6, #b878d9) !important;
 }
 
 #happiness-fill {
-  background: #82be88 !important;
+  background: linear-gradient(90deg, #2ecc71, #5ddc5d) !important;
 }
 
 
@@ -182,7 +182,7 @@ html, body {
   border: none;
   font-size: 26px;
   cursor: pointer;
-  background: #fcfcfc;
+  background: linear-gradient(145deg, #f0f0f0, #dcdcdc);
   box-shadow:
     2px 2px 6px rgba(0,0,0,0.2),
     inset -1px -1px 3px rgba(255,255,255,0.8);
@@ -291,3 +291,20 @@ html, body {
 /* sicherstellen, dass das Ei während der Animation oben liegt */
 #egg { z-index: 6; }
 #pet { z-index: 3; }
+/* ...existing code... */
+/* Night overlay (hidden by default) */
+#night-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0);
+  pointer-events: none;
+  transition: background 300ms ease, opacity 300ms ease;
+  z-index: 8;
+  opacity: 0;
+}
+#night-overlay.active {
+  background: rgba(0,0,0,0.55);
+  pointer-events: auto;
+  opacity: 1;
+}
+/* ...existing code... */

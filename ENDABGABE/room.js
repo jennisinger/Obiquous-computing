@@ -42,6 +42,58 @@ document.addEventListener("DOMContentLoaded", () => {
     <button class="side-btn" id="tic-tac-toe" onclick="window.location.href='tictactoe.html'">🎮</button>
     <button class="side-btn" id="sing">🎤</button>
   `);
+ 
+// ==== Einfaches Night-Overlay Toggle ====
+const sleepBtn = document.getElementById("sleep");
+let nightOverlay = document.getElementById("night-overlay");
+if (!nightOverlay) {
+  nightOverlay = document.createElement("div");
+  nightOverlay.id = "night-overlay";
+  document.body.appendChild(nightOverlay); // full-screen overlay
+}
+// Klick togglet die Verdunkelung
+if (sleepBtn) {
+  sleepBtn.addEventListener("click", () => {
+    nightOverlay.classList.toggle("active");
+  });
+}
+// ...existing code...
+
+// Helfer: Tiredness-Bar anpassen (falls vorhanden)
+function adjustTired(delta) {
+  const fill = document.getElementById("tiredness-fill");
+  if (!fill || !fill.parentElement) return;
+  // aktuellen Prozentwert ermitteln (falls dataset nicht gesetzt)
+  let pct = Number(fill.dataset.value);
+  if (isNaN(pct)) {
+    const parentW = fill.parentElement.clientWidth || 100;
+    const curW = parseFloat(getComputedStyle(fill).width) || 0;
+    pct = Math.round((curW / parentW) * 100);
+    if (!pct) pct = 50; // Fallback
+  }
+  pct = Math.max(0, Math.min(100, pct + delta));
+  fill.dataset.value = pct;
+  fill.style.width = pct + "%";
+}
+
+// Toggle-Funktion: Overlay ein/aus
+function toggleSleep() {
+  const goingToSleep = !nightOverlay.classList.contains("active");
+  nightOverlay.classList.toggle("active", goingToSleep);
+
+  // Beispiel: beim Einschlafen Tiredness +20, beim Aufwachen -5
+  if (goingToSleep) adjustTired(20);
+  else adjustTired(-5);
+}
+
+// Klicks binden
+if (sleepBtn) sleepBtn.addEventListener("click", toggleSleep);
+// Overlay klick schließt (optional)
+nightOverlay.addEventListener("click", () => {
+  nightOverlay.classList.remove("active");
+  adjustTired(-5);
+});
+// ...existing code...
 
   // Stelle sicher, dass Sidebars initial versteckt sind (CSS sollte .sidebar { display:none })
   sidebarLeft.classList.remove("visible");
