@@ -35,11 +35,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const sidebarLeft = getOrCreateSidebar("sidebar-left", `
     <button class="side-btn" id="feed">🍎</button>
     <button class="side-btn" id="petting">💛</button>
-    <button class="side-btn" id="sleep">💤</button>
+    <button class="side-btn" id="sleep">💡</button>
   `);
 
   const sidebarRight = getOrCreateSidebar("sidebar-right", `
-    <button class="side-btn" id="tic-tac-toe" onclick="window.location.href='tictactoe.html'">❌⭕</button>
+    <button class="side-btn" id="tic-tac-toe" onclick="window.location.href='tictactoe.html'">🎮</button>
     <button class="side-btn" id="sing">🎤</button>
   `);
 
@@ -153,4 +153,41 @@ egg.addEventListener("click", () => {
     ctx.fillStyle = "#d32f2f";
     ctx.fill();
   }
+
+  // ============= STATS SYSTEM =============
+  // Stats-Werte (0-100)
+  let stats = {
+    hunger: 100,
+    tiredness: 100,
+    happiness: 100
+  };
+
+  // Funktion zum Aktualisieren der Balken
+  function updateStats() {
+    document.getElementById("hunger-fill").style.width = stats.hunger + "%";
+    document.getElementById("tiredness-fill").style.width = stats.tiredness + "%";
+    document.getElementById("happiness-fill").style.width = stats.happiness + "%";
+  }
+
+  // Funktion zum Ändern eines Stats
+  function changeStat(statName, amount) {
+    if (stats.hasOwnProperty(statName)) {
+      stats[statName] += amount;
+      stats[statName] = Math.max(0, Math.min(100, stats[statName])); // Begrenzen auf 0-100
+      updateStats();
+    }
+  }
+
+  // Exponiere changeStat global, damit Buttons darauf zugreifen können
+  window.changeStat = changeStat;
+
+  // Initialisiere die Balken
+  updateStats();
+
+  // Beispiel: Stats langsam über Zeit verschlechtern
+  setInterval(() => {
+    changeStat("hunger", -3);   // Hunger sinkt um 3
+    changeStat("tiredness", -2); // Müdigkeit sinkt um 2
+    changeStat("happiness", -2); // Glück sinkt um 2
+  }, 5000); // Alle 5 Sekunden
 });
