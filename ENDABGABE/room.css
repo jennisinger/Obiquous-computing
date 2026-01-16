@@ -153,7 +153,7 @@ html, body {
   background: #ffca7a !important;
 }
 
-#tiredness-fill {
+#energy-fill {
   background: #6b6dba !important;
 }
 
@@ -291,3 +291,18 @@ html, body {
 /* sicherstellen, dass das Ei während der Animation oben liegt */
 #egg { z-index: 6; }
 #pet { z-index: 3; }
+
+#night-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0);
+  pointer-events: none; /* lässt Klicks durch (Buttons bleiben bedienbar) */
+  transition: background 300ms ease, opacity 300ms ease;
+  z-index: 4; /* unter den Sidebars (die haben z-index:5) */
+  opacity: 0;
+}
+#night-overlay.active {
+  background: rgba(0,0,0,0.6);
+  pointer-events: none; /* weiterhin klick‑durchlässig, Sleep-Button bleibt erreichbar */
+  opacity: 1;
+}

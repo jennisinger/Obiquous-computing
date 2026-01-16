@@ -35,14 +35,29 @@ document.addEventListener("DOMContentLoaded", () => {
   const sidebarLeft = getOrCreateSidebar("sidebar-left", `
     <button class="side-btn" id="feed">🍎</button>
     <button class="side-btn" id="petting">💛</button>
-    <button class="side-btn" id="sleep">💡</button>
+    <button class="side-btn" id="energy">💡</button>
   `);
+  
 
   const sidebarRight = getOrCreateSidebar("sidebar-right", `
     <button class="side-btn" id="tic-tac-toe" onclick="window.location.href='tictactoe.html'">🎮</button>
     <button class="side-btn" id="sing">🎤</button>
   `);
 
+// Night overlay toggle (direkt nach sidebarRight)
+const sleepBtn = document.getElementById('sleep');
+let nightOverlay = document.getElementById('night-overlay');
+if (!nightOverlay) {
+  nightOverlay = document.createElement('div');
+  nightOverlay.id = 'night-overlay';
+  playArea.appendChild(nightOverlay); // ins play-area, deckt nur den Spielbereich ab
+}
+if (sleepBtn) {
+  sleepBtn.addEventListener('click', () => {
+    nightOverlay.classList.toggle('active');
+  });
+}
+// ...existing code...
   // Stelle sicher, dass Sidebars initial versteckt sind (CSS sollte .sidebar { display:none })
   sidebarLeft.classList.remove("visible");
   sidebarRight.classList.remove("visible");
@@ -69,6 +84,9 @@ egg.addEventListener("click", () => {
       pet.classList.remove("hidden");
       pet.classList.add("shown");
     }
+
+localStorage.setItem('petHatched', '1');
+
 
     if (typeof sidebarLeft !== "undefined" && sidebarLeft) sidebarLeft.classList.add("visible");
     if (typeof sidebarRight !== "undefined" && sidebarRight) sidebarRight.classList.add("visible");
@@ -187,7 +205,7 @@ egg.addEventListener("click", () => {
   // Beispiel: Stats langsam über Zeit verschlechtern
   setInterval(() => {
     changeStat("hunger", -3);   // Hunger sinkt um 3
-    changeStat("tiredness", -2); // Müdigkeit sinkt um 2
+    changeStat("tiredness", -5); // Müdigkeit sinkt um 5
     changeStat("happiness", -2); // Glück sinkt um 2
   }, 5000); // Alle 5 Sekunden
 });
