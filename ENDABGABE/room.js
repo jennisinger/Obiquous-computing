@@ -1,10 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // DEBUG: Clear localStorage to force animation on first load
-  console.log("Current localStorage.petHatched:", localStorage.getItem("petHatched"));
-  
-  // Reset localStorage on page load (for testing) - remove this line later if you want persistence
-  localStorage.removeItem("petHatched");
-  
   const playArea = document.getElementById("play-area");
   if (!playArea) {
     console.error("play-area fehlt im DOM");
@@ -12,8 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // --- Helpers ---------------------------------------------------------
-  function getOrCreateSidebar(id, html) {
-    let el = document.getElementById(id);
+  function getOrCreateSidebar(id, html) {    let el = document.getElementById(id);
     if (!el) {
       el = document.createElement("div");
       el.id = id;
@@ -88,24 +81,34 @@ document.addEventListener("DOMContentLoaded", () => {
   const persistentHatched = localStorage.getItem("petHatched") === "1";
   const transientSkip = sessionStorage.getItem("skipEggAnimation") === "1";
 
+  console.log("=== EGG ANIMATION DEBUG ===");
+  console.log("persistentHatched:", persistentHatched);
+  console.log("transientSkip:", transientSkip);
+  console.log("egg element:", egg);
+  console.log("egg classList before:", egg.className);
+
   function startEggPulse() {
-    console.log("startEggPulse called");
+    console.log(">>> startEggPulse CALLED");
     egg.classList.remove("hidden");
     egg.classList.add("egg-pulsing");
-    console.log("egg-pulsing class added, egg classes:", egg.className);
+    console.log("egg classList after:", egg.className);
   }
 
   function stopEggPulse() {
+    console.log(">>> stopEggPulse CALLED");
     egg.classList.remove("egg-pulsing");
   }
 
   // Only pulse if not already persistently hatched and not coming back via back button
-  console.log("persistentHatched:", persistentHatched, "transientSkip:", transientSkip);
+  // TEMP: Force animation to show for testing - comment out later
+  localStorage.removeItem("petHatched");
+  
+  console.log("Will pulse?", !persistentHatched && !transientSkip);
   if (!persistentHatched && !transientSkip) {
-    console.log("Starting egg pulse on page load");
+    console.log(">>> STARTING PULSE");
     startEggPulse();
   } else {
-    console.log("Skipping egg pulse, showing sidebars instead");
+    console.log(">>> STOPPING PULSE - showing sidebars instead");
     stopEggPulse();
   }
 

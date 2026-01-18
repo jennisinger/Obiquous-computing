@@ -105,7 +105,7 @@ html, body {
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  display: flex;
+  display: none;
   flex-direction: row;
   gap: 30px;
   padding: 16px 24px;
@@ -114,6 +114,10 @@ html, body {
   box-shadow: 4px 4px 12px rgba(0,0,0,0.1),
               inset -2px -2px 6px rgba(255,255,255,0.9);
   z-index: 10;
+}
+
+.sidebar-top.visible {
+  display: flex;
 }
 
 .stat-item {

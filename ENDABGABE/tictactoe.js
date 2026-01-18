@@ -1,6 +1,7 @@
 const cells = document.querySelectorAll('.cell');
 const statusDisplay = document.getElementById('status');
 const resetBtn = document.getElementById('reset-btn');
+const backBtn = document.getElementById('back-btn');
 const playerWinsDisplay = document.getElementById('player-wins');
 const computerWinsDisplay = document.getElementById('computer-wins');
 
@@ -115,3 +116,14 @@ function resetGame() {
 }
 
 resetBtn.addEventListener('click', resetGame);
+
+// Back Button - Navigate back to room.html with sidebars already loaded
+if (backBtn) {
+    backBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        // Set flags so room.html loads with sidebars visible immediately
+        sessionStorage.setItem('skipEggAnimation', '1');
+        sessionStorage.setItem('jumpTo', 'sidebarsLoaded');
+        window.location.href = 'room.html';
+    });
+}
