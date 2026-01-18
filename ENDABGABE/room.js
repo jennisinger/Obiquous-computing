@@ -64,14 +64,12 @@ document.addEventListener("DOMContentLoaded", () => {
   // ============= STATS SYSTEM =============
   let stats = {
     hunger: 100,
-    energy: 100,
-    happiness: 100
+    energy: 100
   };
 
   function updateStats() {
     document.getElementById("hunger-fill").style.width = stats.hunger + "%";
     document.getElementById("energy-fill").style.width = stats.energy + "%";
-    document.getElementById("happiness-fill").style.width = stats.happiness + "%";
   }
 
   function changeStat(statName, amount) {
@@ -95,7 +93,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!nightOverlay.classList.contains('active')) {
           changeStat("hunger", -5);
           changeStat("energy", -3);
-          changeStat("happiness", -2);
         }
       }, 5000);
     }
@@ -141,12 +138,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ============= SLEEP BUTTON =============
   const sleepBtn = document.getElementById('sleep');
+  let snoreSound = null;
   if (sleepBtn) {
     sleepBtn.addEventListener('click', () => {
       const isSleeping = nightOverlay.classList.toggle('active');
 
       if (isSleeping) {
         // Energie-Aufladung starten
+        // Schnarch-Sound im Loop abspielen
+        if (!snoreSound) {
+          snoreSound = new Audio("assets/sound_snoring.mp3");
+          snoreSound.loop = true;
+        }
+        snoreSound.currentTime = 0;
+        snoreSound.play();
         if (!sleepInterval) {
           sleepInterval = setInterval(() => {
             changeStat("energy", 5);
@@ -157,6 +162,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (sleepInterval) {
           clearInterval(sleepInterval);
           sleepInterval = null;
+        }
+        // Schnarch-Sound stoppen
+        if (snoreSound) {
+          snoreSound.pause();
+          snoreSound.currentTime = 0;
         }
       }
     });
@@ -308,8 +318,12 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     if (collision) {
-      // Hunger auffüllen (z.B. +20)
-      if (typeof changeStat === "function") changeStat("hunger", 20);
+      // Hunger auffüllen (z.B. +30)
+      if (typeof changeStat === "function") changeStat("hunger", 30);
+
+      // Sound abspielen wenn gegessen wird
+      const eatSound = new Audio("assets/sound_eating.mp3");
+      eatSound.play();
 
       // Hier kannst du später die Ess-Animation starten
       if (pet.classList.contains("shown")) {

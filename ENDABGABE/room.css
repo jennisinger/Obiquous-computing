@@ -12,7 +12,7 @@ html, body {
   width: 100vw;
 }
 
-/* Spielfläche */
+/* SpielflÃ¤che */
 #play-area {
   height: 100%;
   display: flex;
@@ -35,7 +35,7 @@ html, body {
   z-index: 3;
 }
 
-/* Pulsierende Aura */
+/* Pulsierendes Ei */
 #egg::after {
   content: "";
   position: absolute;
@@ -52,7 +52,7 @@ html, body {
   100% { opacity: 0.4; transform: scale(0.9); }
 }
 
-/* Ei wackelt beim Schlüpfen */
+/* Ei wackelt beim SchlÃ¼pfen */
 .egg-hatching {
   animation: shake 1.2s ease-in-out forwards;
 }
@@ -65,7 +65,7 @@ html, body {
   100% { transform: translateX(-50%) rotate(0deg) scale(1); }
 }
 
-/* Tier */
+ 
 #pet {
   width: min(70vw, 700px);
   height: auto;
@@ -77,6 +77,7 @@ html, body {
   display: none;
 }
 
+
 #pet img {
   width: 100%;
   height: auto;
@@ -87,7 +88,7 @@ html, body {
 .sidebar {
   position: absolute;
   top: 10%;
-  display: none; /* erst nach Tier-Schlüpfen */
+  display: none; /* erst nach Tier-SchlÃ¼pfen */
   flex-direction: column;
   gap: 12px;
   padding: 12px;
@@ -148,7 +149,7 @@ html, body {
   border-radius: 8px;
 }
 
-/* Unterschiedliche Farben für verschiedene Stats */
+/* Unterschiedliche Farben fÃ¼r verschiedene Stats */
 #hunger-fill {
   background: #ffca7a !important;
 }
@@ -156,11 +157,6 @@ html, body {
 #energy-fill {
   background: #6b6dba !important;
 }
-
-#happiness-fill {
-  background: #82be88 !important;
-}
-
 
 /* Linke Sidebar */
 #sidebar-left {
@@ -208,7 +204,7 @@ html, body {
   --sidebar-gap: 12px;
 }
 
-/* Damit das Zentrum der Spiel-Fläche nicht von den Sidebars überlappt wird */
+/* Damit das Zentrum der Spiel-FlÃ¤che nicht von den Sidebars Ã¼berlappt wird */
 #play-area {
   padding-left: calc(var(--sidebar-w) + var(--sidebar-gap));
   padding-right: calc(var(--sidebar-w) + var(--sidebar-gap));
@@ -216,7 +212,7 @@ html, body {
 }
 
 
-/* Sichtbarkeit über Klasse steuern (statt inline display) */
+/* Sichtbarkeit Ã¼ber Klasse steuern (statt inline display) */
 .sidebar.visible {
   display: flex;
 }
@@ -245,7 +241,7 @@ html, body {
     bottom: 12px;
     left: 50%;
     transform: translateX(-50%);
-    /* display bleiben standardmäßig none, sichtbar durch .visible */
+    /* display bleiben standardmÃ¤ÃŸig none, sichtbar durch .visible */
     flex-direction: row;
     gap: 8px;
     padding: 8px 10px;
@@ -273,7 +269,7 @@ html, body {
     border-radius: 10px;
   }
 
-  /* Ei / Tier anpassen, damit sie nicht von der Bottom-Bar überlappt werden */
+  /* Ei / Tier anpassen, damit sie nicht von der Bottom-Bar Ã¼berlappt werden */
   #egg, #pet {
     width: min(82vw, 420px);
     bottom: 20%;
@@ -288,7 +284,7 @@ html, body {
 #pet.hidden { display: none !important; }
 #pet.shown { display: block !important; }
 
-/* sicherstellen, dass das Ei während der Animation oben liegt */
+/* sicherstellen, dass das Ei wÃ¤hrend der Animation oben liegt */
 #egg { z-index: 6; }
 #pet { z-index: 3; }
 
@@ -296,13 +292,13 @@ html, body {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0);
-  pointer-events: none; /* lässt Klicks durch (Buttons bleiben bedienbar) */
+  pointer-events: none; /* lÃ¤sst Klicks durch (Buttons bleiben bedienbar) */
   transition: background 300ms ease, opacity 300ms ease;
   z-index: 4; /* unter den Sidebars (die haben z-index:5) */
   opacity: 0;
 }
 #night-overlay.active {
   background: rgba(0,0,0,0.6);
-  pointer-events: none; /* weiterhin klick‑durchlässig, Sleep-Button bleibt erreichbar */
+  pointer-events: none; /* weiterhin klickâ€‘durchlÃ¤ssig, Sleep-Button bleibt erreichbar */
   opacity: 1;
 }
