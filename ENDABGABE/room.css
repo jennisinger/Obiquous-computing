@@ -302,3 +302,75 @@ html, body {
   pointer-events: none; /* weiterhin klickâ€‘durchlÃ¤ssig, Sleep-Button bleibt erreichbar */
   opacity: 1;
 }
+
+@media (max-width: 700px) {
+  /* Sidebars werden zu einer zentrierten Bottom-Bar */
+  #bottom-bar {
+    position: fixed;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: linear-gradient(145deg,#ffffff,#f0f8ff);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    z-index: 30;
+    align-items: center;
+    pointer-events: auto;
+  }
+
+  /* Reuse .sidebar when used as bottom-bar */
+  .sidebar {
+    position: fixed;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: row;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 999px;
+    display: none; /* .visible zeigt sie an */
+    z-index: 30;
+  }
+  .sidebar.visible { display: flex; }
+
+  /* Top stats small & centered */
+  .sidebar-top {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    z-index: 30;
+  }
+  .sidebar-top.visible { display: flex; }
+
+  /* Touch friendly buttons */
+  .side-btn {
+    width: 56px;
+    height: 56px;
+    font-size: 24px;
+    border-radius: 12px;
+    padding: 6px;
+  }
+
+  /* Stat bars compact */
+  .stat-item { min-width: 80px; }
+  .stat-bar { height: 8px; }
+  .stat-label { font-size: 11px; }
+
+  /* Ensure overlay covers whole screen */
+  #night-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+  }
+
+  /* Play-area padding so content not hidden behind bottom bar */
+  #play-area { padding-bottom: calc(72px + 16px); box-sizing: border-box; }
+}
