@@ -60,7 +60,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const sidebarTop = document.getElementById("sidebar-top") || getOrCreateSidebar("sidebar-top", `
     <div class="stat-item"><div class="stat-label">Hunger</div><div class="stat-bar"><div id="hunger-fill" class="stat-fill"></div></div></div>
     <div class="stat-item"><div class="stat-label">Energie</div><div class="stat-bar"><div id="energy-fill" class="stat-fill"></div></div></div>
-    <div class="stat-item"><div class="stat-label">Glück</div><div class="stat-bar"><div id="happiness-fill" class="stat-fill"></div></div></div>
   `);
 
   // Ensure initial visibility classes
