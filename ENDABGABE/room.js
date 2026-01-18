@@ -1,4 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // DEBUG: Clear localStorage to force animation on first load
+  console.log("Current localStorage.petHatched:", localStorage.getItem("petHatched"));
+  
+  // Reset localStorage on page load (for testing) - remove this line later if you want persistence
+  localStorage.removeItem("petHatched");
+  
   const playArea = document.getElementById("play-area");
   if (!playArea) {
     console.error("play-area fehlt im DOM");
