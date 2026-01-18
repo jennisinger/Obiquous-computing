@@ -83,22 +83,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const transientSkip = sessionStorage.getItem("skipEggAnimation") === "1";
 
   function startEggPulse() {
-    // try to use CSS keyframes "pulse" if available, fallback to simple inline
+    console.log("startEggPulse called");
     egg.classList.remove("hidden");
-    egg.style.animation = "pulse 1.6s ease-in-out infinite";
-    egg.style.webkitAnimation = "pulse 1.6s ease-in-out infinite";
+    egg.classList.add("egg-pulsing");
+    console.log("egg-pulsing class added, egg classes:", egg.className);
   }
 
   function stopEggPulse() {
-    egg.style.animation = "";
-    egg.style.webkitAnimation = "";
     egg.classList.remove("egg-pulsing");
   }
 
   // Only pulse if not already persistently hatched and not coming back via back button
+  console.log("persistentHatched:", persistentHatched, "transientSkip:", transientSkip);
   if (!persistentHatched && !transientSkip) {
+    console.log("Starting egg pulse on page load");
     startEggPulse();
   } else {
+    console.log("Skipping egg pulse, showing sidebars instead");
     stopEggPulse();
   }
 
@@ -187,28 +188,71 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- Egg hatch logic -----------------------------------------------
   egg.addEventListener("click", () => {
     if (egg.classList.contains("hidden") || egg.classList.contains("egg-hatching")) return;
-    // stop pulse then play hatch animation
-    stopEggPulse();
+
     egg.classList.add("egg-hatching");
 
     let finished = false;
     const finishHatch = () => {
       if (finished) return;
       finished = true;
-      revealSidebarsAndMaybeJump({ persist: true });
+
+      // Ei verstecken, Pet zeigen
+      egg.classList.add("hidden");
+      egg.classList.remove("egg-hatching");
+
+      if (pet) {
+        pet.classList.remove("hidden");
+        pet.classList.add("shown");
+      }
+
+      localStorage.setItem('petHatched', '1');
+
+      // Sidebars sichtbar machen
+      if (sidebarLeft) sidebarLeft.classList.add("visible");
+      if (sidebarRight) sidebarRight.classList.add("visible");
+
+      // Stats-Leiste sichtbar machen
+      if (sidebarTop) sidebarTop.style.display = "flex";
+
+      // Stats starten
+      initStats();
     };
 
     egg.addEventListener("animationend", finishHatch, { once: true });
     egg.addEventListener("webkitAnimationEnd", finishHatch, { once: true });
-    setTimeout(finishHatch, 1600); // fallback
+    setTimeout(finishHatch, 1600);
   });
 
   // If previously persistently hatched, restore state immediately
   if (persistentHatched) {
-    revealSidebarsAndMaybeJump({ persist: true });
+    // Hide egg, show pet and sidebars
+    egg.classList.add("hidden");
+    pet.classList.remove("hidden");
+    pet.classList.add("shown");
+    sidebarLeft.classList.add("visible");
+    sidebarRight.classList.add("visible");
+    if (sidebarTop) sidebarTop.style.display = "flex";
+    initStats();
   } else if (transientSkip) {
-    // transient jump (only when coming back via back-button)
-    revealSidebarsAndMaybeJump({ persist: false });
+    // Coming back from singing_bear - same as persistently hatched
+    egg.classList.add("hidden");
+    pet.classList.remove("hidden");
+    pet.classList.add("shown");
+    sidebarLeft.classList.add("visible");
+    sidebarRight.classList.add("visible");
+    if (sidebarTop) sidebarTop.style.display = "flex";
+    initStats();
+    
+    // if requested via session, scroll/focus to sidebars
+    if (sessionStorage.getItem("jumpTo") === "sidebarsLoaded") {
+      const target = document.getElementById("sidebar-top") || document.getElementById("sidebar-left") || document.getElementById("sidebar-right");
+      if (target) {
+        try { target.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" }); } catch (e) {}
+        if (typeof target.focus === "function") target.focus();
+      }
+      sessionStorage.removeItem("jumpTo");
+    }
+    sessionStorage.removeItem("skipEggAnimation");
   }
 
   // --- Sleep / night overlay -----------------------------------------

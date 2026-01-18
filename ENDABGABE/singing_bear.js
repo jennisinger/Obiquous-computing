@@ -20,16 +20,14 @@ document.addEventListener('DOMContentLoaded', () => {
       audioPlayer.play().catch(() => {});
     });
   }
-  // ...existing code...
-    if (backBtn) {
+
+  if (backBtn) {
     backBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    // Nur session-Flag setzen, keine persistente Markierung
-    sessionStorage.setItem('skipEggAnimation', '1');
-    sessionStorage.setItem('jumpTo', 'sidebarsLoaded');
-    window.location.href = 'room.html';
+      e.preventDefault();
+      sessionStorage.setItem('skipEggAnimation', '1');
+      sessionStorage.setItem('jumpTo', 'sidebarsLoaded');
+      window.location.href = 'room.html';
     });
-}
-// ...existing code...
+  }
 });
 

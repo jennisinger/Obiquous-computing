@@ -36,7 +36,7 @@ html, body {
 }
 
 /* Pulsierendes Ei */
-#egg::after {
+#egg.egg-pulsing::after {
   content: "";
   position: absolute;
   inset: -10%;
@@ -373,4 +373,8 @@ html, body {
 
   /* Play-area padding so content not hidden behind bottom bar */
   #play-area { padding-bottom: calc(72px + 16px); box-sizing: border-box; }
+}
+
+.hidden {
+  display: none !important;
 }
