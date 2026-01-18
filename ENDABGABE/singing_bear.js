@@ -20,14 +20,16 @@ document.addEventListener('DOMContentLoaded', () => {
       audioPlayer.play().catch(() => {});
     });
   }
-
-  // Back button: mark pet as hatched and return to room
-  if (backBtn) {
+  // ...existing code...
+    if (backBtn) {
     backBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      localStorage.setItem('petHatched', '1');
-      window.location.href = 'room.html';
+    e.preventDefault();
+    // Nur session-Flag setzen, keine persistente Markierung
+    sessionStorage.setItem('skipEggAnimation', '1');
+    sessionStorage.setItem('jumpTo', 'sidebarsLoaded');
+    window.location.href = 'room.html';
     });
-  }
+}
+// ...existing code...
 });
 

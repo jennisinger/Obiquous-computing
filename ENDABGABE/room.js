@@ -79,6 +79,30 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   nightOverlay.classList.remove("active");
 
+  // --- Ensure initial egg pulse (only on direct load, not when jumping back) ---
+  const persistentHatched = localStorage.getItem("petHatched") === "1";
+  const transientSkip = sessionStorage.getItem("skipEggAnimation") === "1";
+
+  function startEggPulse() {
+    // try to use CSS keyframes "pulse" if available, fallback to simple inline
+    egg.classList.remove("hidden");
+    egg.style.animation = "pulse 1.6s ease-in-out infinite";
+    egg.style.webkitAnimation = "pulse 1.6s ease-in-out infinite";
+  }
+
+  function stopEggPulse() {
+    egg.style.animation = "";
+    egg.style.webkitAnimation = "";
+    egg.classList.remove("egg-pulsing");
+  }
+
+  // Only pulse if not already persistently hatched and not coming back via back button
+  if (!persistentHatched && !transientSkip) {
+    startEggPulse();
+  } else {
+    stopEggPulse();
+  }
+
   // --- Stats system (init only when hatched) --------------------------
   const stats = { hunger: 100, energy: 80, happiness: 90 };
   let __statsInterval = null;
@@ -122,27 +146,57 @@ document.addEventListener("DOMContentLoaded", () => {
     if (sidebarTop) sidebarTop.classList.add("visible");
   }
 
-  // --- Egg hatch logic -----------------------------------------------
-  function finishHatchRoutine() {
-    egg.classList.add("hidden");
-    egg.classList.remove("egg-hatching");
-    if (pet) { pet.classList.remove("hidden"); pet.classList.add("shown"); }
-    localStorage.setItem("petHatched", "1");
+  // --- Reveal sidebars / pet and optional jump (used for real hatch and transient jump) ---
+  function revealSidebarsAndMaybeJump({ persist = false } = {}) {
+    // Hide egg and stop pulse
+    if (egg && !egg.classList.contains("hidden")) {
+      egg.classList.add("hidden");
+      egg.classList.remove("egg-hatching");
+      stopEggPulse();
+    }
+    if (pet) {
+      pet.classList.remove("hidden");
+      pet.classList.add("shown");
+    }
+
     if (sidebarLeft) sidebarLeft.classList.add("visible");
     if (sidebarRight) sidebarRight.classList.add("visible");
     if (sidebarTop) sidebarTop.classList.add("visible");
-    initStats();
+
+    if (persist) {
+      localStorage.setItem("petHatched", "1");
+    }
+
+    if (typeof initStats === "function") initStats();
+
+    // dispatch ready event
+    window.dispatchEvent(new Event("sidebars-ready"));
+
+    // if requested via session, scroll/focus to sidebars
+    if (sessionStorage.getItem("jumpTo") === "sidebarsLoaded") {
+      const target = document.getElementById("sidebar-top") || document.getElementById("sidebar-left") || document.getElementById("sidebar-right");
+      if (target) {
+        try { target.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" }); } catch (e) {}
+        if (typeof target.focus === "function") target.focus();
+      }
+      sessionStorage.removeItem("jumpTo");
+    }
+
+    sessionStorage.removeItem("skipEggAnimation");
   }
 
+  // --- Egg hatch logic -----------------------------------------------
   egg.addEventListener("click", () => {
     if (egg.classList.contains("hidden") || egg.classList.contains("egg-hatching")) return;
+    // stop pulse then play hatch animation
+    stopEggPulse();
     egg.classList.add("egg-hatching");
 
     let finished = false;
     const finishHatch = () => {
       if (finished) return;
       finished = true;
-      finishHatchRoutine();
+      revealSidebarsAndMaybeJump({ persist: true });
     };
 
     egg.addEventListener("animationend", finishHatch, { once: true });
@@ -150,14 +204,12 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(finishHatch, 1600); // fallback
   });
 
-  // If previously hatched, restore state immediately
-  if (localStorage.getItem("petHatched") === "1") {
-    if (egg) egg.classList.add("hidden");
-    if (pet) { pet.classList.remove("hidden"); pet.classList.add("shown"); }
-    if (sidebarLeft) sidebarLeft.classList.add("visible");
-    if (sidebarRight) sidebarRight.classList.add("visible");
-    if (sidebarTop) sidebarTop.classList.add("visible");
-    initStats();
+  // If previously persistently hatched, restore state immediately
+  if (persistentHatched) {
+    revealSidebarsAndMaybeJump({ persist: true });
+  } else if (transientSkip) {
+    // transient jump (only when coming back via back-button)
+    revealSidebarsAndMaybeJump({ persist: false });
   }
 
   // --- Sleep / night overlay -----------------------------------------
@@ -230,10 +282,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- Navigation handlers -------------------------------------------
   const tttBtn = document.getElementById("tic-tac-toe");
-  if (tttBtn) tttBtn.addEventListener("click", () => { localStorage.setItem("petHatched", "1"); window.location.href = "tictactoe.html"; });
+  if (tttBtn) tttBtn.addEventListener("click", () => { window.location.href = "tictactoe.html"; });
 
   const singBtn = document.getElementById("sing");
-  if (singBtn) singBtn.addEventListener("click", () => { localStorage.setItem("petHatched", "1"); window.location.href = "singing_bear.html"; });
+  if (singBtn) singBtn.addEventListener("click", () => { window.location.href = "singing_bear.html"; });
 
   // --- Canvas background ---------------------------------------------
   const canvas = document.createElement("canvas");
@@ -300,104 +352,103 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.fill();
   }
 
-  // ...existing code...
-// --- Drag to feed (robust pointer + touch fallback) -------------------
-(function setupDragBurger() {
-  const feedBtn = document.getElementById("feed");
-  if (!feedBtn || !pet) return;
+  // --- Drag to feed (robust pointer + touch fallback) -------------------
+  (function setupDragBurger() {
+    const feedBtn = document.getElementById("feed");
+    if (!feedBtn || !pet) return;
 
-  let dragBurger = document.getElementById("dragging-burger");
-  if (!dragBurger) {
-    dragBurger = document.createElement("span");
-    dragBurger.id = "dragging-burger";
-    dragBurger.textContent = "🍔";
-    Object.assign(dragBurger.style, {
-      position: "absolute",
-      cursor: "grab",
-      fontSize: "28px",
-      display: "none",
-      zIndex: 9999,
-      touchAction: "none"
-    });
-    document.body.appendChild(dragBurger);
-  }
-
-  // prevent browser gestures from interfering
-  feedBtn.style.touchAction = "none";
-
-  let dragging = false;
-  let offsetX = 0, offsetY = 0;
-
-  function moveAt(clientX, clientY) {
-    dragBurger.style.left = (clientX - offsetX + window.scrollX) + "px";
-    dragBurger.style.top  = (clientY - offsetY + window.scrollY) + "px";
-  }
-
-  function startDrag(clientX, clientY) {
-    const rect = dragBurger.getBoundingClientRect();
-    offsetX = rect.width / 2;
-    offsetY = rect.height / 2;
-    dragBurger.style.display = "block";
-    moveAt(clientX, clientY);
-    dragging = true;
-    document.addEventListener("pointermove", onPointerMove);
-    document.addEventListener("pointerup", onPointerUp);
-  }
-
-  function onPointerMove(e) {
-    if (!dragging) return;
-    e.preventDefault();
-    moveAt(e.clientX, e.clientY);
-  }
-
-  function endDrag(clientX, clientY) {
-    dragging = false;
-    document.removeEventListener("pointermove", onPointerMove);
-    document.removeEventListener("pointerup", onPointerUp);
-
-    const bR = dragBurger.getBoundingClientRect();
-    const pR = pet.getBoundingClientRect();
-    const hit = !(bR.right < pR.left || bR.left > pR.right || bR.bottom < pR.top || bR.top > pR.bottom);
-
-    if (hit) {
-      changeStat("hunger", 40);
-      const eatSound = new Audio("assets/sound_eating.mp3");
-      eatSound.play().catch(()=>{});
-      if (pet.classList.contains("shown")) {
-        pet.classList.add("eating");
-        setTimeout(() => pet.classList.remove("eating"), 1000);
-      }
+    let dragBurger = document.getElementById("dragging-burger");
+    if (!dragBurger) {
+      dragBurger = document.createElement("span");
+      dragBurger.id = "dragging-burger";
+      dragBurger.textContent = "🍔";
+      Object.assign(dragBurger.style, {
+        position: "absolute",
+        cursor: "grab",
+        fontSize: "28px",
+        display: "none",
+        zIndex: 9999,
+        touchAction: "none"
+      });
+      document.body.appendChild(dragBurger);
     }
-    dragBurger.style.display = "none";
-  }
 
-  function onPointerUp(e) { endDrag(e.clientX, e.clientY); }
+    // prevent browser gestures from interfering
+    feedBtn.style.touchAction = "none";
 
-  // pointer start
-  feedBtn.addEventListener("pointerdown", (ev) => {
-    ev.preventDefault();
-    const r = feedBtn.getBoundingClientRect();
-    startDrag(r.left + r.width/2, r.top + r.height/2);
-  });
+    let dragging = false;
+    let offsetX = 0, offsetY = 0;
 
-  // touch fallback
-  feedBtn.addEventListener("touchstart", (ev) => {
-    ev.preventDefault();
-    const t = ev.touches[0];
-    startDrag(t.clientX, t.clientY);
-  }, { passive: false });
+    function moveAt(clientX, clientY) {
+      dragBurger.style.left = (clientX - offsetX + window.scrollX) + "px";
+      dragBurger.style.top  = (clientY - offsetY + window.scrollY) + "px";
+    }
 
-  document.addEventListener("touchmove", (ev) => {
-    if (!dragging) return;
-    ev.preventDefault();
-    const t = ev.touches[0];
-    moveAt(t.clientX, t.clientY);
-  }, { passive: false });
+    function startDrag(clientX, clientY) {
+      const rect = dragBurger.getBoundingClientRect();
+      offsetX = rect.width / 2;
+      offsetY = rect.height / 2;
+      dragBurger.style.display = "block";
+      moveAt(clientX, clientY);
+      dragging = true;
+      document.addEventListener("pointermove", onPointerMove);
+      document.addEventListener("pointerup", onPointerUp);
+    }
 
-  document.addEventListener("touchend", (ev) => {
-    if (!dragging) return;
-    const t = ev.changedTouches[0];
-    endDrag(t.clientX, t.clientY);
-  });
-})();
+    function onPointerMove(e) {
+      if (!dragging) return;
+      e.preventDefault();
+      moveAt(e.clientX, e.clientY);
+    }
+
+    function endDrag(clientX, clientY) {
+      dragging = false;
+      document.removeEventListener("pointermove", onPointerMove);
+      document.removeEventListener("pointerup", onPointerUp);
+
+      const bR = dragBurger.getBoundingClientRect();
+      const pR = pet.getBoundingClientRect();
+      const hit = !(bR.right < pR.left || bR.left > pR.right || bR.bottom < pR.top || bR.top > pR.bottom);
+
+      if (hit) {
+        changeStat("hunger", 40);
+        const eatSound = new Audio("assets/sound_eating.mp3");
+        eatSound.play().catch(()=>{});
+        if (pet.classList.contains("shown")) {
+          pet.classList.add("eating");
+          setTimeout(() => pet.classList.remove("eating"), 1000);
+        }
+      }
+      dragBurger.style.display = "none";
+    }
+
+    function onPointerUp(e) { endDrag(e.clientX, e.clientY); }
+
+    // pointer start
+    feedBtn.addEventListener("pointerdown", (ev) => {
+      ev.preventDefault();
+      const r = feedBtn.getBoundingClientRect();
+      startDrag(r.left + r.width/2, r.top + r.height/2);
+    });
+
+    // touch fallback
+    feedBtn.addEventListener("touchstart", (ev) => {
+      ev.preventDefault();
+      const t = ev.touches[0];
+      startDrag(t.clientX, t.clientY);
+    }, { passive: false });
+
+    document.addEventListener("touchmove", (ev) => {
+      if (!dragging) return;
+      ev.preventDefault();
+      const t = ev.touches[0];
+      moveAt(t.clientX, t.clientY);
+    }, { passive: false });
+
+    document.addEventListener("touchend", (ev) => {
+      if (!dragging) return;
+      const t = ev.changedTouches[0];
+      endDrag(t.clientX, t.clientY);
+    });
+  })();
 });
