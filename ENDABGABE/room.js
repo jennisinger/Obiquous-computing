@@ -106,7 +106,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!sleeping) {
         changeStat("hunger", -2);
         changeStat("energy", -1);
-        changeStat("happiness", -1);
       }
     }, 5000);
   }
@@ -175,13 +174,13 @@ document.addEventListener("DOMContentLoaded", () => {
         snoreSound.play().catch(() => {});
         // start slow recharge while sleeping
         if (!sleepRechargeInterval) {
-          sleepRechargeInterval = setInterval(() => changeStat("energy", +5), 4000);
+          sleepRechargeInterval = setInterval(() => changeStat("energy", +15), 4000);
         }
       } else {
         if (sleepRechargeInterval) { clearInterval(sleepRechargeInterval); sleepRechargeInterval = null; }
         if (snoreSound) { snoreSound.pause(); snoreSound.currentTime = 0; }
         // small wake bonus
-        changeStat("energy", +8);
+        changeStat("energy", +10);
       }
     });
 
@@ -191,7 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
         nightOverlay.classList.remove("active");
         if (sleepRechargeInterval) { clearInterval(sleepRechargeInterval); sleepRechargeInterval = null; }
         if (snoreSound) { snoreSound.pause(); snoreSound.currentTime = 0; }
-        changeStat("energy", +8);
+        changeStat("energy", +10);
       }
     });
   }
@@ -359,7 +358,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const pR = pet.getBoundingClientRect();
       const hit = !(bR.right < pR.left || bR.left > pR.right || bR.bottom < pR.top || bR.top > pR.bottom);
       if (hit) {
-        changeStat("hunger", 30);
+        changeStat("hunger", 40);
         const eatSound = new Audio("assets/sound_eating.mp3");
         eatSound.play().catch(() => {});
         if (pet.classList.contains("shown")) {
