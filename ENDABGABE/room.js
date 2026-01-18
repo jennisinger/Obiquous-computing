@@ -300,79 +300,104 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.fill();
   }
 
-  // --- Drag to feed (single robust implementation) -------------------
-  (function setupDragBurger() {
-    const feedBtn = document.getElementById("feed");
-    if (!feedBtn || !pet) return;
+  // ...existing code...
+// --- Drag to feed (robust pointer + touch fallback) -------------------
+(function setupDragBurger() {
+  const feedBtn = document.getElementById("feed");
+  if (!feedBtn || !pet) return;
 
-    let dragBurger = document.getElementById("dragging-burger");
-    if (!dragBurger) {
-      dragBurger = document.createElement("span");
-      dragBurger.id = "dragging-burger";
-      dragBurger.textContent = "🍔";
-      Object.assign(dragBurger.style, {
-        position: "absolute",
-        cursor: "grab",
-        fontSize: "28px",
-        display: "none",
-        zIndex: 9999,
-        touchAction: "none"
-      });
-      document.body.appendChild(dragBurger);
-    }
-
-    let dragging = false;
-    let startX = 0, startY = 0, startLeft = 0, startTop = 0;
-
-    function getCenter(el) {
-      const r = el.getBoundingClientRect();
-      return { x: r.left + r.width / 2 + window.scrollX, y: r.top + r.height / 2 + window.scrollY };
-    }
-
-    feedBtn.addEventListener("pointerdown", (ev) => {
-      ev.preventDefault();
-      const c = getCenter(feedBtn);
-      dragBurger.style.left = c.x - dragBurger.offsetWidth / 2 + "px";
-      dragBurger.style.top = c.y - dragBurger.offsetHeight / 2 + "px";
-      dragBurger.style.display = "block";
-      dragging = true;
-      startX = ev.clientX; startY = ev.clientY;
-      startLeft = parseFloat(dragBurger.style.left) || 0;
-      startTop = parseFloat(dragBurger.style.top) || 0;
-      dragBurger.setPointerCapture(ev.pointerId);
+  let dragBurger = document.getElementById("dragging-burger");
+  if (!dragBurger) {
+    dragBurger = document.createElement("span");
+    dragBurger.id = "dragging-burger";
+    dragBurger.textContent = "🍔";
+    Object.assign(dragBurger.style, {
+      position: "absolute",
+      cursor: "grab",
+      fontSize: "28px",
+      display: "none",
+      zIndex: 9999,
+      touchAction: "none"
     });
+    document.body.appendChild(dragBurger);
+  }
 
-    dragBurger.addEventListener("pointermove", (ev) => {
-      if (!dragging) return;
-      const dx = ev.clientX - startX;
-      const dy = ev.clientY - startY;
-      dragBurger.style.left = startLeft + dx + "px";
-      dragBurger.style.top = startTop + dy + "px";
-    });
+  // prevent browser gestures from interfering
+  feedBtn.style.touchAction = "none";
 
-    function endDrag(ev) {
-      if (!dragging) return;
-      dragging = false;
-      try { dragBurger.releasePointerCapture(ev.pointerId); } catch (e) {}
-      const bR = dragBurger.getBoundingClientRect();
-      const pR = pet.getBoundingClientRect();
-      const hit = !(bR.right < pR.left || bR.left > pR.right || bR.bottom < pR.top || bR.top > pR.bottom);
-      if (hit) {
-        changeStat("hunger", 40);
-        const eatSound = new Audio("assets/sound_eating.mp3");
-        eatSound.play().catch(() => {});
-        if (pet.classList.contains("shown")) {
-          pet.classList.add("eating");
-          setTimeout(() => pet.classList.remove("eating"), 900);
-        }
+  let dragging = false;
+  let offsetX = 0, offsetY = 0;
+
+  function moveAt(clientX, clientY) {
+    dragBurger.style.left = (clientX - offsetX + window.scrollX) + "px";
+    dragBurger.style.top  = (clientY - offsetY + window.scrollY) + "px";
+  }
+
+  function startDrag(clientX, clientY) {
+    const rect = dragBurger.getBoundingClientRect();
+    offsetX = rect.width / 2;
+    offsetY = rect.height / 2;
+    dragBurger.style.display = "block";
+    moveAt(clientX, clientY);
+    dragging = true;
+    document.addEventListener("pointermove", onPointerMove);
+    document.addEventListener("pointerup", onPointerUp);
+  }
+
+  function onPointerMove(e) {
+    if (!dragging) return;
+    e.preventDefault();
+    moveAt(e.clientX, e.clientY);
+  }
+
+  function endDrag(clientX, clientY) {
+    dragging = false;
+    document.removeEventListener("pointermove", onPointerMove);
+    document.removeEventListener("pointerup", onPointerUp);
+
+    const bR = dragBurger.getBoundingClientRect();
+    const pR = pet.getBoundingClientRect();
+    const hit = !(bR.right < pR.left || bR.left > pR.right || bR.bottom < pR.top || bR.top > pR.bottom);
+
+    if (hit) {
+      changeStat("hunger", 40);
+      const eatSound = new Audio("assets/sound_eating.mp3");
+      eatSound.play().catch(()=>{});
+      if (pet.classList.contains("shown")) {
+        pet.classList.add("eating");
+        setTimeout(() => pet.classList.remove("eating"), 1000);
       }
-      dragBurger.style.display = "none";
     }
+    dragBurger.style.display = "none";
+  }
 
-    dragBurger.addEventListener("pointerup", endDrag);
-    dragBurger.addEventListener("pointercancel", () => { dragging = false; dragBurger.style.display = "none"; });
-  })();
+  function onPointerUp(e) { endDrag(e.clientX, e.clientY); }
+
+  // pointer start
+  feedBtn.addEventListener("pointerdown", (ev) => {
+    ev.preventDefault();
+    const r = feedBtn.getBoundingClientRect();
+    startDrag(r.left + r.width/2, r.top + r.height/2);
+  });
+
+  // touch fallback
+  feedBtn.addEventListener("touchstart", (ev) => {
+    ev.preventDefault();
+    const t = ev.touches[0];
+    startDrag(t.clientX, t.clientY);
+  }, { passive: false });
+
+  document.addEventListener("touchmove", (ev) => {
+    if (!dragging) return;
+    ev.preventDefault();
+    const t = ev.touches[0];
+    moveAt(t.clientX, t.clientY);
+  }, { passive: false });
+
+  document.addEventListener("touchend", (ev) => {
+    if (!dragging) return;
+    const t = ev.changedTouches[0];
+    endDrag(t.clientX, t.clientY);
+  });
+})();
 });
-
-
-
