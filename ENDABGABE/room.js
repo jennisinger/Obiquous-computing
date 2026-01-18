@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const playArea = document.getElementById("play-area");
   const egg = document.getElementById("egg");
+
   // Falls mehrere Elemente mit id="pet" existieren: nur erstes behalten
   const petNodes = document.querySelectorAll("#pet");
   let pet = petNodes[0] || null;
@@ -8,7 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let i = 1; i < petNodes.length; i++) petNodes[i].remove();
   }
 
-  // Hinweis: Alert optional, daher entfernt (stört Mobile-Tests)
   // Falls pet nicht vorhanden ist, erstelle fallback (img)
   if (!pet) {
     pet = document.createElement("img");
@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     playArea.appendChild(pet);
   }
 
-  // Hole vorhandene Sidebars oder erstelle nur falls nicht vorhanden
+  // Funktion: vorhandene Sidebars holen oder erstellen
   function getOrCreateSidebar(id, html) {
     let el = document.getElementById(id);
     if (!el) {
@@ -37,71 +37,132 @@ document.addEventListener("DOMContentLoaded", () => {
     <button class="side-btn" id="petting">💛</button>
     <button class="side-btn" id="energy">💡</button>
   `);
-  
 
   const sidebarRight = getOrCreateSidebar("sidebar-right", `
     <button class="side-btn" id="tic-tac-toe" onclick="window.location.href='tictactoe.html'">🎮</button>
     <button class="side-btn" id="sing">🎤</button>
   `);
 
-// Night overlay toggle (direkt nach sidebarRight)
-const sleepBtn = document.getElementById('sleep');
-let nightOverlay = document.getElementById('night-overlay');
-if (!nightOverlay) {
-  nightOverlay = document.createElement('div');
-  nightOverlay.id = 'night-overlay';
-  playArea.appendChild(nightOverlay); // ins play-area, deckt nur den Spielbereich ab
-}
-if (sleepBtn) {
-  sleepBtn.addEventListener('click', () => {
-    nightOverlay.classList.toggle('active');
-  });
-}
-// ...existing code...
-  // Stelle sicher, dass Sidebars initial versteckt sind (CSS sollte .sidebar { display:none })
+  // Top Sidebar für Stats
+  const sidebarTop = document.getElementById("sidebar-top");
+  if (sidebarTop) sidebarTop.style.display = "none";
+
+  // Night overlay
+  let nightOverlay = document.getElementById('night-overlay');
+  if (!nightOverlay) {
+    nightOverlay = document.createElement('div');
+    nightOverlay.id = 'night-overlay';
+    playArea.appendChild(nightOverlay);
+  }
+
+  // Stelle sicher, dass Sidebars und Pet initial versteckt sind
   sidebarLeft.classList.remove("visible");
   sidebarRight.classList.remove("visible");
   pet.classList.add("hidden");
   egg.classList.remove("hidden");
 
-egg.addEventListener("click", () => {
-  // Guard: nicht nochmal starten, wenn's schon läuft oder Ei versteckt ist
-  if (egg.classList.contains("hidden") || egg.classList.contains("egg-hatching")) return;
-
-  // Starte Wackel-Animation
-  egg.classList.add("egg-hatching");
-
-  let finished = false;
-  const finishHatch = () => {
-    if (finished) return;
-    finished = true;
-
-    // Animation beendet → Ei verbergen, Pet zeigen, Sidebars einblenden
-    egg.classList.add("hidden");
-    egg.classList.remove("egg-hatching");
-
-    if (pet) {
-      pet.classList.remove("hidden");
-      pet.classList.add("shown");
-    }
-
-localStorage.setItem('petHatched', '1');
-
-
-    if (typeof sidebarLeft !== "undefined" && sidebarLeft) sidebarLeft.classList.add("visible");
-    if (typeof sidebarRight !== "undefined" && sidebarRight) sidebarRight.classList.add("visible");
+  // ============= STATS SYSTEM =============
+  let stats = {
+    hunger: 100,
+    energy: 100,
+    happiness: 100
   };
 
-  // Event-driven Ende + WebKit-Fallback
-  egg.addEventListener("animationend", finishHatch, { once: true });
-  egg.addEventListener("webkitAnimationEnd", finishHatch, { once: true });
+  function updateStats() {
+    document.getElementById("hunger-fill").style.width = stats.hunger + "%";
+    document.getElementById("energy-fill").style.width = stats.energy + "%";
+    document.getElementById("happiness-fill").style.width = stats.happiness + "%";
+  }
 
-  // Sicherheits-Fallback falls animationend nicht kommt
-  setTimeout(finishHatch, 1600);
-});
+  function changeStat(statName, amount) {
+    if (stats.hasOwnProperty(statName)) {
+      stats[statName] += amount;
+      stats[statName] = Math.max(0, Math.min(100, stats[statName]));
+      updateStats();
+    }
+  }
 
+  window.changeStat = changeStat;
 
-  // Canvas-Hintergrund (responsiv)
+  let statInterval = null;   // normales Intervall
+  let sleepInterval = null;  // Energie-Aufladung
+
+  function initStats() {
+    updateStats();
+    if (!statInterval) {
+      statInterval = setInterval(() => {
+        // Nur runterziehen, wenn Tier wach ist
+        if (!nightOverlay.classList.contains('active')) {
+          changeStat("hunger", -3);
+          changeStat("energy", -5);
+          changeStat("happiness", -2);
+        }
+      }, 5000);
+    }
+  }
+
+  // ============= EGG HATCHING =============
+  egg.addEventListener("click", () => {
+    if (egg.classList.contains("hidden") || egg.classList.contains("egg-hatching")) return;
+
+    egg.classList.add("egg-hatching");
+
+    let finished = false;
+    const finishHatch = () => {
+      if (finished) return;
+      finished = true;
+
+      // Ei verstecken, Pet zeigen
+      egg.classList.add("hidden");
+      egg.classList.remove("egg-hatching");
+
+      if (pet) {
+        pet.classList.remove("hidden");
+        pet.classList.add("shown");
+      }
+
+      localStorage.setItem('petHatched', '1');
+
+      // Sidebars sichtbar machen
+      if (sidebarLeft) sidebarLeft.classList.add("visible");
+      if (sidebarRight) sidebarRight.classList.add("visible");
+
+      // Stats-Leiste sichtbar machen
+      if (sidebarTop) sidebarTop.style.display = "flex";
+
+      // Stats starten
+      initStats();
+    };
+
+    egg.addEventListener("animationend", finishHatch, { once: true });
+    egg.addEventListener("webkitAnimationEnd", finishHatch, { once: true });
+    setTimeout(finishHatch, 1600);
+  });
+
+  // ============= SLEEP BUTTON =============
+  const sleepBtn = document.getElementById('sleep');
+  if (sleepBtn) {
+    sleepBtn.addEventListener('click', () => {
+      const isSleeping = nightOverlay.classList.toggle('active');
+
+      if (isSleeping) {
+        // Energie-Aufladung starten
+        if (!sleepInterval) {
+          sleepInterval = setInterval(() => {
+            changeStat("energy", 5);
+          }, 5000);
+        }
+      } else {
+        // Energie-Aufladung stoppen
+        if (sleepInterval) {
+          clearInterval(sleepInterval);
+          sleepInterval = null;
+        }
+      }
+    });
+  }
+
+  // ============= CANVAS BACKGROUND =============
   const canvas = document.createElement("canvas");
   canvas.id = "bg-canvas";
   canvas.style.position = "absolute";
@@ -171,41 +232,6 @@ localStorage.setItem('petHatched', '1');
     ctx.fillStyle = "#d32f2f";
     ctx.fill();
   }
-
-  // ============= STATS SYSTEM =============
-  // Stats-Werte (0-100)
-  let stats = {
-    hunger: 100,
-    tiredness: 100,
-    happiness: 100
-  };
-
-  // Funktion zum Aktualisieren der Balken
-  function updateStats() {
-    document.getElementById("hunger-fill").style.width = stats.hunger + "%";
-    document.getElementById("energy-fill").style.width = stats.tiredness + "%";
-    document.getElementById("happiness-fill").style.width = stats.happiness + "%";
-  }
-
-  // Funktion zum Ändern eines Stats
-  function changeStat(statName, amount) {
-    if (stats.hasOwnProperty(statName)) {
-      stats[statName] += amount;
-      stats[statName] = Math.max(0, Math.min(100, stats[statName])); // Begrenzen auf 0-100
-      updateStats();
-    }
-  }
-
-  // Exponiere changeStat global, damit Buttons darauf zugreifen können
-  window.changeStat = changeStat;
-
-  // Initialisiere die Balken
-  updateStats();
-
-  // Beispiel: Stats langsam über Zeit verschlechtern
-  setInterval(() => {
-    changeStat("hunger", -3);   // Hunger sinkt um 3
-    changeStat("energy", -5); // Müdigkeit sinkt um 5
-    changeStat("happiness", -2); // Glück sinkt um 2
-  }, 5000); // Alle 5 Sekunden
 });
+
+
