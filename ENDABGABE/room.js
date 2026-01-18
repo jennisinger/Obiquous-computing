@@ -183,7 +183,7 @@ localStorage.setItem('petHatched', '1');
   // Funktion zum Aktualisieren der Balken
   function updateStats() {
     document.getElementById("hunger-fill").style.width = stats.hunger + "%";
-    document.getElementById("tiredness-fill").style.width = stats.tiredness + "%";
+    document.getElementById("energy-fill").style.width = stats.tiredness + "%";
     document.getElementById("happiness-fill").style.width = stats.happiness + "%";
   }
 
@@ -205,7 +205,7 @@ localStorage.setItem('petHatched', '1');
   // Beispiel: Stats langsam über Zeit verschlechtern
   setInterval(() => {
     changeStat("hunger", -3);   // Hunger sinkt um 3
-    changeStat("tiredness", -5); // Müdigkeit sinkt um 5
+    changeStat("energy", -5); // Müdigkeit sinkt um 5
     changeStat("happiness", -2); // Glück sinkt um 2
   }, 5000); // Alle 5 Sekunden
 });
