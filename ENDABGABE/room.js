@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const sidebarLeft = getOrCreateSidebar("sidebar-left", `
-    <button class="side-btn" id="feed">🍎</button>
+    <button class="side-btn" id="feed">🍔</button>
     <button class="side-btn" id="petting">💛</button>
     <button class="side-btn" id="energy">💡</button>
   `);
@@ -93,8 +93,8 @@ document.addEventListener("DOMContentLoaded", () => {
       statInterval = setInterval(() => {
         // Nur runterziehen, wenn Tier wach ist
         if (!nightOverlay.classList.contains('active')) {
-          changeStat("hunger", -3);
-          changeStat("energy", -5);
+          changeStat("hunger", -5);
+          changeStat("energy", -3);
           changeStat("happiness", -2);
         }
       }, 5000);
@@ -234,4 +234,99 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+document.addEventListener("DOMContentLoaded", () => {
+  const playArea = document.getElementById("play-area");
+  const pet = document.getElementById("pet");
+  const burgerBtn = document.getElementById("feed"); // Button mit Burger
 
+  if (!burgerBtn || !pet) return;
+
+  // Erstelle ein dragbares Burger-Element
+  const dragBurger = document.createElement("span");
+  dragBurger.id = "dragging-burger";
+  dragBurger.textContent = "🍔"; // Burger Emoji
+  dragBurger.style.position = "absolute";
+  dragBurger.style.cursor = "grab";
+  dragBurger.style.fontSize = "26px";
+  dragBurger.style.display = "none";
+  dragBurger.style.zIndex = "10";
+  playArea.appendChild(dragBurger);
+
+  let isDragging = false;
+
+  // Positionen merken
+  let startX, startY;
+  let burgerStartX, burgerStartY;
+
+  function getButtonCenter(btn) {
+    const rect = btn.getBoundingClientRect();
+    return {
+      x: rect.left + rect.width / 2 + window.scrollX,
+      y: rect.top + rect.height / 2 + window.scrollY
+    };
+  }
+
+  burgerBtn.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    const center = getButtonCenter(burgerBtn);
+    dragBurger.style.left = center.x - dragBurger.offsetWidth / 2 + "px";
+    dragBurger.style.top = center.y - dragBurger.offsetHeight / 2 + "px";
+    dragBurger.style.display = "block";
+    isDragging = true;
+
+    startX = e.clientX;
+    startY = e.clientY;
+
+    burgerStartX = center.x - dragBurger.offsetWidth / 2;
+    burgerStartY = center.y - dragBurger.offsetHeight / 2;
+
+    dragBurger.setPointerCapture(e.pointerId);
+  });
+
+  dragBurger.addEventListener("pointermove", (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    dragBurger.style.left = burgerStartX + dx + "px";
+    dragBurger.style.top = burgerStartY + dy + "px";
+  });
+
+  dragBurger.addEventListener("pointerup", (e) => {
+    if (!isDragging) return;
+    isDragging = false;
+    dragBurger.releasePointerCapture(e.pointerId);
+
+    // Prüfen, ob Burger beim Tier ist
+    const burgerRect = dragBurger.getBoundingClientRect();
+    const petRect = pet.getBoundingClientRect();
+
+    const collision = !(
+      burgerRect.right < petRect.left ||
+      burgerRect.left > petRect.right ||
+      burgerRect.bottom < petRect.top ||
+      burgerRect.top > petRect.bottom
+    );
+
+    if (collision) {
+      // Hunger auffüllen (z.B. +20)
+      if (typeof changeStat === "function") changeStat("hunger", 20);
+
+      // Hier kannst du später die Ess-Animation starten
+      if (pet.classList.contains("shown")) {
+        pet.classList.add("eating"); // Beispiel-Klasse, Animation selbst erstellen
+        setTimeout(() => pet.classList.remove("eating"), 1000);
+      }
+    }
+
+    // Burger wieder zurücksetzen
+    dragBurger.style.left = burgerStartX + "px";
+    dragBurger.style.top = burgerStartY + "px";
+    dragBurger.style.display = "none";
+  });
+
+  // optional: touch / mobile scroll fix
+  dragBurger.addEventListener("pointercancel", () => {
+    isDragging = false;
+    dragBurger.style.display = "none";
+  });
+});
