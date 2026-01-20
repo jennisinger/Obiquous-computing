@@ -113,16 +113,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // --- Stats system (init only when hatched) --------------------------
-  const stats = { hunger: 100, energy: 80, happiness: 90 };
+  const stats = { hunger: 100, energy: 80};
   let __statsInterval = null;
 
   function updateStatsUI() {
     const h = document.getElementById("hunger-fill");
     const e = document.getElementById("energy-fill");
-    const g = document.getElementById("happiness-fill");
     if (h) h.style.width = Math.max(0, Math.min(100, stats.hunger)) + "%";
     if (e) e.style.width = Math.max(0, Math.min(100, stats.energy)) + "%";
-    if (g) g.style.width = Math.max(0, Math.min(100, stats.happiness)) + "%";
   }
 
   function changeStat(name, delta) {
@@ -137,7 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
     __statsInterval = setInterval(() => {
       const sleeping = nightOverlay.classList.contains("active");
       if (!sleeping) {
-        changeStat("hunger", -2);
+        changeStat("hunger", -3);
         changeStat("energy", -1);
       }
     }, 5000);
@@ -463,7 +461,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const hit = !(bR.right < pR.left || bR.left > pR.right || bR.bottom < pR.top || bR.top > pR.bottom);
 
       if (hit) {
-        changeStat("hunger", 40);
+        changeStat("hunger", 20);
         const eatSound = new Audio("assets/sound_eating.mp3");
         eatSound.play().catch(()=>{});
         if (pet.classList.contains("shown")) {
