@@ -1,45 +1,27 @@
-/* ============================================================================
-   ROOM.JS - HAUPTSPIEL DES AR-HAUSTIERS
-   ============================================================================
-   
-   Dieses Script verwaltet:
-   - Das Ei, das zum Pet wird
-   - Die Stats (Hunger, Energie)
-   - Die Sidebars mit Buttons
-   - Das Füttern des Pets durch Drag & Drop
-   - Schlafen und Nacht-Overlay
-   - Responsive Layout für Mobile/Desktop
-   
-   ============================================================================ */
 
-// Diese Funktion läuft AUTOMATISCH, sobald die HTML-Seite vollständig geladen ist
-// Das ist wie das Starten eines Videospiels - alles wird initialisiert
 document.addEventListener("DOMContentLoaded", () => {
   
-  // ========================================================================
   // 1. GRUNDELEMENTE LADEN
-  // ========================================================================
-  
-  // Finde die Spielfläche (das große Gebiet mit Blauem Hintergrund)
+
+  // Spielfläche aufrufen
   const playArea = document.getElementById("play-area");
   
-  // Fehlerbehandlung: Falls die Spielfläche nicht existiert, stoppe alles
+  // Fehlermeldung der Konsole: Falls die Spielfläche nicht existiert stoppt alles
   if (!playArea) {
     console.error("play-area fehlt im DOM - die Seite ist kaputt!");
-    return; // Beende die Funktion hier
+    return; 
   }
-
-  // ========================================================================
-  // 2. HILFSFUNKTION: Sidebars erstellen oder holen
-  // ========================================================================
   
-  // Diese Funktion ist wie eine "Fabrik" - sie erstellt die Button-Leisten
+
+  // 2. HILFSFUNKTION: Sidebars erstellen oder holen
+
+  // erstellt die Button-Leisten
   function getOrCreateSidebar(id, html) {
     // Suche nach einem Element mit dieser ID
-    let el = document.getElementById(id);
+    let el = document.getElementById(id); // El = Variable für das Element‚
     
-    // Wenn es nicht existiert, erstelle es
-    if (!el) {
+    // Sorgt dafür dass die Sidebars nur einmal erstellt werden 
+    if (!el) { 
       el = document.createElement("div"); // Neuer Behälter (Container)
       el.id = id;  // Gib ihm eine ID
       el.className = id === "sidebar-top" ? "sidebar-top" : "sidebar"; // CSS-Klasse
@@ -49,56 +31,53 @@ document.addEventListener("DOMContentLoaded", () => {
     return el; // Gib das Element zurück (zum Speichern in einer Variable)
   }
 
-  // ========================================================================
+
   // 3. EI UND PET LADEN
-  // ========================================================================
-  
-  // Versuche das Ei zu finden, oder erstelle es, falls es nicht existiert
+
+  // Versucht das Ei zu finden, oder erstellt es, falls es nicht existiert
   const eggExisting = document.getElementById("egg");
   let egg = eggExisting || (() => {
-    // Falls das Ei nicht in der HTML ist, erstelle es als Bild
-    const e = document.createElement("img");
-    e.id = "egg";
-    e.src = "assets/egg.png"; // Die Bilddatei für das Ei
-    e.alt = "Ei"; // Text falls Bild nicht lädt
-    e.className = "";
-    playArea.appendChild(e); // Hänge es in die Spielfläche ein
-    return e; // Gib das Ei zurück
+    // Falls das Ei nicht in der HTML ist wird es erstellt als Bild
+    const eggo = document.createElement("img");
+    eggo.id = "egg";
+    eggo.src = "assets/egg.png"; // Die Bilddatei für das Ei
+    eggo.alt = "Ei"; // Text falls Bild nicht lädt
+    eggo.className = "";
+    playArea.appendChild(eggo); // Hänge es in die Spielfläche ein
+    return eggo; // Gib das Ei zurück
   })();
 
-  // Verhindere, dass das Pet doppelt existiert
-  const petNodes = document.querySelectorAll("#pet");
-  let pet = petNodes[0] || null; // Nimm das erste Pet oder null
+  // Verhindert, dass der Bär (pet) doppelt existiert
+  const petbear = document.querySelectorAll("#pet");
+  let pet = petbear[0] || null; // Nimmt das erste Pet oder null
   
-  // Wenn es mehrere gibt, lösche alle außer dem ersten
-  if (petNodes.length > 1) {
-    for (let i = 1; i < petNodes.length; i++) {
-      petNodes[i].remove(); // Lösche das doppelte Pet
+  // Wenn es mehrere pets gibt, löscht es alle außer den ersten
+  if (petbear.length > 1) {
+    for (let i = 1; i < petbear.length; i++) { 
+      petbear[i].remove(); // Löscht das doppelte Pet
     }
   }
   
-  // Falls kein Pet existiert, erstelle einen
+  // Falls kein Pet existiert, erstellt es eins
   if (!pet) {
     pet = document.createElement("img");
     pet.id = "pet";
-    pet.src = "assets/bear.png"; // Das Tier-Bild (Bär)
+    pet.src = "assets/bear.png"; 
     pet.alt = "Tier";
-    pet.classList.add("hidden"); // Verstecke es am Anfang
+    pet.classList.add("hidden"); // Versteckt es am Anfang
     playArea.appendChild(pet);
   }
 
-  // ========================================================================
+
   // 4. SIDEBARS ERSTELLEN (Die Button-Leisten)
-  // ========================================================================
   
-  // Linke Sidebar - Die Buttons für Füttern und Energie
+  // Linke Sidebar - Buttons für Füttern und Energie
   const sidebarLeft = getOrCreateSidebar("sidebar-left", `
     <button class="side-btn" id="feed">🍔</button>
-    <button class="side-btn" id="petting">💛</button>
     <button class="side-btn" id="energy">💡</button>
   `);
 
-  // Rechte Sidebar - Die Buttons für Spiele
+  // Rechte Sidebar - Buttons für Spiele
   const sidebarRight = getOrCreateSidebar("sidebar-right", `
     <button class="side-btn" id="tic-tac-toe">🎮</button>
     <button class="side-btn" id="sing">🎤</button>
@@ -116,9 +95,8 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
   `);
 
-  // ========================================================================
-  // 5. ANFANGS-SICHTBARKEIT SETZEN
-  // ========================================================================
+
+  // 5. ANFANGS-SICHTBARKEIT VON SIDEBAR & PET
   
   // Am Anfang sind die Sidebars NICHT sichtbar (versteckt)
   if (sidebarLeft) sidebarLeft.classList.remove("visible");
@@ -129,9 +107,8 @@ document.addEventListener("DOMContentLoaded", () => {
   pet.classList.add("hidden");
   egg.classList.remove("hidden");
 
-  // ========================================================================
-  // 6. NACHT-OVERLAY ERSTELLEN (Der dunkle Bildschirm zum Schlafen)
-  // ========================================================================
+
+  // 6. NACHT-OVERLAY 
   
   let nightOverlay = document.getElementById("night-overlay");
   if (!nightOverlay) {
@@ -141,35 +118,30 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   nightOverlay.classList.remove("active"); // Am Anfang nicht aktiv
 
-  // ========================================================================
-  // 7. ÜBERPRÜFE, OB DAS SPIEL SCHON GELADEN WURDE (Speicher-Check)
-  // ========================================================================
-  
-  // localStorage = permanenter Speicher (bleibt auch nach Browser-Schließung)
-  // sessionStorage = temporärer Speicher (nur für diese Session)
-  
-  // Prüfe ob das Pet bereits geschlüpft ist
+
+  // 7. ÜBERPRÜFT, OB DAS SPIEL SCHON GELADEN WURDE 
+
+  // Prüft ob der Bär bereits geschlüpft ist
   const persistentHatched = localStorage.getItem("petHatched") === "1";
   
-  // Prüfe ob wir vom Singing-Bear zurückkommen (Skip Animation)
+  // Prüft ob man vom Singing-Bear zurückkommt, wenn ja dann wird Schlüpf-Animation geskippt
   const transientSkip = sessionStorage.getItem("skipEggAnimation") === "1";
 
-  // ========================================================================
-  // 8. EI-ANIMATIONS-FUNKTIONEN
-  // ========================================================================
+
+  // 8. EI-ANIMATION 
   
-  // Funktion: Starte das Pulsen des Eis (die wellenartige Animation)
+  // Funktion startet das Pulsieren von Ei 
   function startEggPulse() {
     egg.classList.remove("hidden"); // Zeige das Ei
-    egg.classList.add("egg-pulsing"); // Starte die Pulsing-Animation (in CSS definiert)
+    egg.classList.add("egg-pulsing"); // Starte die Animation (in CSS definiert)
   }
 
-  // Funktion: Stoppe das Pulsen des Eis
+  // Funktion stoppt das Pulsieren von Ei
   function stopEggPulse() {
-    egg.classList.remove("egg-pulsing"); // Entferne die Animation
+    egg.classList.remove("egg-pulsing"); // Entfernt die Animation
   }
 
-  // TEMP: Lösche den Speicher für Testing (später auskommentieren wenn Speicher wichtig ist)
+  // TEMP: Lösche den Speicher für Testing (später auskommentieren wenn Speicher wichtig ist) 
   localStorage.removeItem("petHatched");
   
   // Logik: Soll das Ei pulsieren?
@@ -180,9 +152,8 @@ document.addEventListener("DOMContentLoaded", () => {
     stopEggPulse(); // Verstecke das Ei und zeige den Bären
   }
 
-  // ========================================================================
-  // 9. STATS-SYSTEM (Hunger und Energie)
-  // ========================================================================
+
+  // 9. STATS (Hunger und Energie)
   
   // Speichere die Werte des Haustiers
   const stats = { 
