@@ -271,7 +271,7 @@ document.addEventListener("DOMContentLoaded", () => {
     sleepBtn.addEventListener("click", () => {
       const nowSleeping = nightOverlay.classList.toggle("active");
       if (nowSleeping) {
-        if (!snoreSound) { snoreSound = new Audio("assets/sound_snoring.mp3"); snoreSound.loop = true; }
+        if (!snoreSound) { snoreSound = new Audio("assets/lullaby.wav"); snoreSound.loop = true; }
         snoreSound.currentTime = 0;
         snoreSound.play().catch(() => {});
         // start slow recharge while sleeping
