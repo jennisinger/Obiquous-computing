@@ -1,6 +1,4 @@
-
 document.addEventListener("DOMContentLoaded", () => {
-
   // 1. GRUNDELEMENTE LADEN
 
   // Spielfläche aufrufen
@@ -12,7 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-
   // 2. HILFSFUNKTION: Sidebars erstellen oder holen
 
   // erstellt die Button-Leisten
@@ -20,10 +17,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // Suche nach einem Element mit dieser ID
     let el = document.getElementById(id); // El = Variable für das Element‚
 
-    // Sorgt dafür dass die Sidebars nur einmal erstellt werden 
+    // Sorgt dafür dass die Sidebars nur einmal erstellt werden
     if (!el) {
       el = document.createElement("div"); // Neuer Behälter (Container)
-      el.id = id;  // Gib ihm eine ID
+      el.id = id; // Gib ihm eine ID
       el.className = id === "sidebar-top" ? "sidebar-top" : "sidebar"; // CSS-Klasse
       el.innerHTML = html; // Füge den HTML-Code ein (die Buttons)
       playArea.appendChild(el); // Hänge es in die Spielfläche ein
@@ -31,21 +28,22 @@ document.addEventListener("DOMContentLoaded", () => {
     return el; // Gib das Element zurück (zum Speichern in einer Variable)
   }
 
-
   // 3. EI UND PET LADEN
 
   // Versucht das Ei zu finden, oder erstellt es, falls es nicht existiert
   const eggExisting = document.getElementById("egg");
-  let egg = eggExisting || (() => {
-    // Falls das Ei nicht in der HTML ist wird es erstellt als Bild
-    const eggo = document.createElement("img");
-    eggo.id = "egg";
-    eggo.src = "assets/egg.png"; // Die Bilddatei für das Ei
-    eggo.alt = "Ei"; // Text falls Bild nicht lädt
-    eggo.className = "";
-    playArea.appendChild(eggo); // Hänge es in die Spielfläche ein
-    return eggo; // Gib das Ei zurück
-  })();
+  let egg =
+    eggExisting ||
+    (() => {
+      // Falls das Ei nicht in der HTML ist wird es erstellt als Bild
+      const eggo = document.createElement("img");
+      eggo.id = "egg";
+      eggo.src = "assets/egg.png"; // Die Bilddatei für das Ei
+      eggo.alt = "Ei"; // Text falls Bild nicht lädt
+      eggo.className = "";
+      playArea.appendChild(eggo); // Hänge es in die Spielfläche ein
+      return eggo; // Gib das Ei zurück
+    })();
 
   // Verhindert, dass der Bär (pet) doppelt existiert
   const petbear = document.querySelectorAll("#pet");
@@ -68,23 +66,32 @@ document.addEventListener("DOMContentLoaded", () => {
     playArea.appendChild(pet);
   }
 
-
   // 4. SIDEBARS ERSTELLEN (Die Button-Leisten)
 
   // Linke Sidebar - Buttons für Füttern und Energie
-  const sidebarLeft = getOrCreateSidebar("sidebar-left", `
+  const sidebarLeft = getOrCreateSidebar(
+    "sidebar-left",
+    `
     <button class="side-btn" id="feed">🍔</button>
     <button class="side-btn" id="energy">💡</button>
-  `);
+  `,
+  );
 
   // Rechte Sidebar - Buttons für Spiele
-  const sidebarRight = getOrCreateSidebar("sidebar-right", `
+  const sidebarRight = getOrCreateSidebar(
+    "sidebar-right",
+    `
     <button class="side-btn" id="tic-tac-toe">🎮</button>
     <button class="side-btn" id="sing">🎤</button>
-  `);
+  `,
+  );
 
   // Obere Sidebar - Die Stats (Hunger und Energie Balken)
-  const sidebarTop = document.getElementById("sidebar-top") || getOrCreateSidebar("sidebar-top", `
+  const sidebarTop =
+    document.getElementById("sidebar-top") ||
+    getOrCreateSidebar(
+      "sidebar-top",
+      `
     <div class="stat-item">
       <div class="stat-label">Hunger</div>
       <div class="stat-bar"><div id="hunger-fill" class="stat-fill"></div></div>
@@ -93,8 +100,8 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="stat-label">Energie</div>
       <div class="stat-bar"><div id="energy-fill" class="stat-fill"></div></div>
     </div>
-  `);
-
+  `,
+    );
 
   // 5. ANFANGS-SICHTBARKEIT VON SIDEBAR & PET
 
@@ -107,8 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
   pet.classList.add("hidden");
   egg.classList.remove("hidden");
 
-
-  // 6. NACHT-OVERLAY 
+  // 6. NACHT-OVERLAY
 
   let nightOverlay = document.getElementById("night-overlay");
   if (!nightOverlay) {
@@ -118,8 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   nightOverlay.classList.remove("active"); // Am Anfang nicht aktiv
 
-
-  // 7. ÜBERPRÜFT, OB DAS SPIEL SCHON GELADEN WURDE 
+  // 7. ÜBERPRÜFT, OB DAS SPIEL SCHON GELADEN WURDE
 
   // Prüft ob der Bär bereits geschlüpft ist
   const persistentHatched = localStorage.getItem("petHatched") === "1";
@@ -127,10 +132,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Prüft ob man vom Singing-Bear zurückkommt, wenn ja dann wird Schlüpf-Animation geskippt
   const transientSkip = sessionStorage.getItem("skipEggAnimation") === "1";
 
+  // 8. EI-ANIMATION
 
-  // 8. EI-ANIMATION 
-
-  // Funktion startet wackeln von Ei 
+  // Funktion startet wackeln von Ei
   function startEggPulse() {
     egg.classList.remove("hidden"); // Zeige das Ei
     egg.classList.add("egg-pulsing"); // Starte die Animation (in CSS definiert)
@@ -144,37 +148,37 @@ document.addEventListener("DOMContentLoaded", () => {
   localStorage.removeItem("petHatched");
 
   // Soll das Ei wackeln?
-  // Ja, aber nur das Pet noch nicht geschlüpft ist 
+  // Ja, aber nur das Pet noch nicht geschlüpft ist
   if (!persistentHatched && !transientSkip) {
     startEggPulse(); // Startet die Animation
   } else {
     stopEggPulse(); // Versteckt das Ei und zeigt den Bären
   }
 
-
-  // 9. HUNGER & ENERGIE 
+  // 9. HUNGER & ENERGIE
 
   // Speichert die Werte des Haustiers
   const stats = {
-    hunger: 100,  // 0-100 (0 = hungrig, 100 = satt)
-    energy: 100    // 0-100 (0 = müde, 100 = wach)
+    hunger: 100, // 0-100 (0 = hungrig, 100 = satt)
+    energy: 100, // 0-100 (0 = müde, 100 = wach)
   };
 
-  let __statsInterval = null; // Speicher für Timer, der Hunger und Energie senkt (ab Zeile 193), zuerst 0, d.h. kein Timer läuft 
+  let __statsInterval = null; // Speicher für Timer, der Hunger und Energie senkt (ab Zeile 193), zuerst 0, d.h. kein Timer läuft
 
-  // Update der Balkenstats  
+  // Update der Balkenstats
   function updateStatsUI() {
     const hungry = document.getElementById("hunger-fill"); //  Hunger-Balken
     const energy = document.getElementById("energy-fill"); //  Energie-Balken
 
     // Balkenbreite anpassen (0% bis 100%)
-    if (hungry) hungry.style.width = Math.max(0, Math.min(100, stats.hunger)) + "%";
-    if (energy) energy.style.width = Math.max(0, Math.min(100, stats.energy)) + "%";
+    if (hungry)
+      hungry.style.width = Math.max(0, Math.min(100, stats.hunger)) + "%";
+    if (energy)
+      energy.style.width = Math.max(0, Math.min(100, stats.energy)) + "%";
   }
 
   // Funktion: Ändere einen Stat-Wert (z.B. +20 Hunger wenn gefüttert)
   function changeStat(name, delta) {
-
     // Ändere den Wert (aber nicht unter 0 oder über 100)
     stats[name] = Math.max(0, Math.min(100, stats[name] + delta));
 
@@ -186,15 +190,15 @@ document.addEventListener("DOMContentLoaded", () => {
   function startStatsInterval() {
     if (__statsInterval) return; // Falls Zeit bereits läuft, stopp (verhindert starten von mehreren Timern)
 
-    // Alle 4 Sekunden werden die Stats niedriger   
+    // Alle 4 Sekunden werden die Stats niedriger
     __statsInterval = setInterval(() => {
       // Prüfe ob Bär schläft, also ob Nacht-Overlay aktiv ist
       const sleeping = nightOverlay.classList.contains("active");
 
       // Falls Bär nicht schläft senkt sich Hunger und Energie
       if (!sleeping) {
-        changeStat("hunger", -3);  // -3 Hunger alle 4 Sekunden
-        changeStat("energy", -1);  // -1 Energie alle 4 Sekunden
+        changeStat("hunger", -3); // -3 Hunger alle 4 Sekunden
+        changeStat("energy", -1); // -1 Energie alle 4 Sekunden
       }
     }, 4000);
   }
@@ -205,23 +209,26 @@ document.addEventListener("DOMContentLoaded", () => {
     __statsInterval = null; // Variable zurücksetzen
   }
 
-  // Funktion: Initialisiere die Stats (am Anfang oder nach Ei-Schlüpfen)
+  // Gibt uns Stats (am Anfang oder nach Ei-Schlüpfen)
   function initStats() {
     updateStatsUI(); // Update die Grafik einmal
     startStatsInterval(); // Starte den regelmäßigen Timer
     if (sidebarTop) sidebarTop.classList.add("visible"); // Zeige die Top-Sidebar
   }
 
-  // 11. EI-SCHLÜPF 
+  // 11. EI-SCHLÜPF
 
   // Wenn man auf das Ei klickt
   egg.addEventListener("click", () => {
-    // Prüft ob Ei schon versteckt ist oder ob es schlüpft
-    if (egg.classList.contains("hidden") || egg.classList.contains("egg-hatching")) {
+    if (
+      egg.classList.contains("hidden") ||
+      egg.classList.contains("egg-hatching")
+    ) {
+      // Prüft ob Ei schon versteckt ist oder ob es schlüpft
       return; // Falls ja, tu nichts
     }
 
-    // Startet die Schlüpf-Animation 
+    // Startet die Schlüpf-Animation
     egg.classList.add("egg-hatching");
 
     let finished = false; // Verhindert Doppel-Ausführung
@@ -230,11 +237,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const finishHatch = () => {
       if (finished) return; // Falls schon gemacht, stoppe
       finished = true;
-
-      //  ANIMATION FERTIG - ZEIGT JETZT BÄR 
-
       egg.classList.add("hidden"); // Versteckt das Ei
       egg.classList.remove("egg-hatching"); // Entfernt Animation
+
+      //  ANIMATION FERTIG - ZEIGT JETZT BÄR
 
       // Zeigt Pet(Bär)
       if (pet) {
@@ -243,7 +249,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // Speichert dass Bär geschlüpft ist
-      localStorage.setItem('petHatched', '1');
+      localStorage.setItem("petHatched", "1");
 
       // Zeigt Sidebars
       if (sidebarLeft) sidebarLeft.classList.add("visible");
@@ -275,11 +281,11 @@ document.addEventListener("DOMContentLoaded", () => {
     initStats();
   }
 
-
   // 13. SCHLAF-MECHANIK (Nacht-Overlay und Schlaflied)
 
   // Findet Energy-Button 💡
-  const sleepBtn = document.getElementById("sleep") || document.getElementById("energy");
+  const sleepBtn =
+    document.getElementById("sleep") || document.getElementById("energy");
   let sleepRechargeInterval = null; // Timer für Energy-Aufladung
   let snoreSound = null; //  Schlaflied
 
@@ -298,7 +304,7 @@ document.addEventListener("DOMContentLoaded", () => {
           snoreSound.loop = true; // loopt Schlaflied
         }
         snoreSound.currentTime = 0;
-        snoreSound.play().catch(() => { }); // falls Sound blockiert wird
+        snoreSound.play().catch(() => {}); // falls Sound blockiert wird
 
         // Startet Energie-Aufladung während schlafen
         if (!sleepRechargeInterval) {
@@ -307,8 +313,7 @@ document.addEventListener("DOMContentLoaded", () => {
           }, 4000);
         }
       } else {
-
-        //  AUFWACHEN 
+        //  AUFWACHEN
 
         // Stoppt Timer
         if (sleepRechargeInterval) {
@@ -360,7 +365,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let bottomBar = document.getElementById("bottom-bar");
 
     if (mobile) {
-      //  HANDY-LAYOUT 
+      //  HANDY-LAYOUT
 
       // erstellt Bottom-Bar falls nicht vorhanden
       if (!bottomBar) {
@@ -371,22 +376,29 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // verschiebt Sidebars nach unten
-      if (sidebarLeft && sidebarLeft.parentElement !== bottomBar) bottomBar.appendChild(sidebarLeft);
-      if (sidebarRight && sidebarRight.parentElement !== bottomBar) bottomBar.appendChild(sidebarRight);
-      if (sidebarTop && sidebarTop.parentElement !== document.body) document.body.appendChild(sidebarTop);
-      if (nightOverlay && nightOverlay.parentElement !== document.body) document.body.appendChild(nightOverlay);
+      if (sidebarLeft && sidebarLeft.parentElement !== bottomBar)
+        bottomBar.appendChild(sidebarLeft);
+      if (sidebarRight && sidebarRight.parentElement !== bottomBar)
+        bottomBar.appendChild(sidebarRight);
+      if (sidebarTop && sidebarTop.parentElement !== document.body)
+        document.body.appendChild(sidebarTop);
+      if (nightOverlay && nightOverlay.parentElement !== document.body)
+        document.body.appendChild(nightOverlay);
     } else {
-
-      // DESKTOP-LAYOUT 
+      // DESKTOP-LAYOUT
 
       // verschiebt Sidebars zur Spielfläche
-      if (sidebarLeft && sidebarLeft.parentElement !== playArea) playArea.appendChild(sidebarLeft);
-      if (sidebarRight && sidebarRight.parentElement !== playArea) playArea.appendChild(sidebarRight);
-      if (sidebarTop && sidebarTop.parentElement !== playArea) playArea.insertBefore(sidebarTop, playArea.firstChild);
+      if (sidebarLeft && sidebarLeft.parentElement !== playArea)
+        playArea.appendChild(sidebarLeft);
+      if (sidebarRight && sidebarRight.parentElement !== playArea)
+        playArea.appendChild(sidebarRight);
+      if (sidebarTop && sidebarTop.parentElement !== playArea)
+        playArea.insertBefore(sidebarTop, playArea.firstChild);
 
       // löscht Bottom-Bar falls leer
       if (bottomBar && bottomBar.childElementCount === 0) bottomBar.remove();
-      if (nightOverlay && nightOverlay.parentElement !== document.body) document.body.appendChild(nightOverlay);
+      if (nightOverlay && nightOverlay.parentElement !== document.body)
+        document.body.appendChild(nightOverlay);
     }
   }
 
@@ -400,25 +412,25 @@ document.addEventListener("DOMContentLoaded", () => {
     __layoutTimer = setTimeout(applyResponsiveLayout, 120); // wartet 120ms dann update
   });
 
-
   // 15. SPIELE (TicTacToe & Singing Bear)
 
   // Wenn der Benutzer auf den TicTacToe-Button klickt, gehe zur TicTacToe-Seite
   const tttBtn = document.getElementById("tic-tac-toe");
-  if (tttBtn) tttBtn.addEventListener("click", () => {
-    window.location.href = "tictactoe.html";
-  });
+  if (tttBtn)
+    tttBtn.addEventListener("click", () => {
+      window.location.href = "tictactoe.html";
+    });
 
   // Wenn der Benutzer auf den Singing-Button klickt, gehe zur Singing-Bear-Seite
   const singBtn = document.getElementById("sing");
-  if (singBtn) singBtn.addEventListener("click", () => {
-    window.location.href = "singing_bear.html";
-  });
-
+  if (singBtn)
+    singBtn.addEventListener("click", () => {
+      window.location.href = "singing_bear.html";
+    });
 
   // 16. CANVAS-HINTERGRUND (Wolken, Pflanzen ...)
 
-  // erstellt Canvas-Element 
+  // erstellt Canvas-Element
   const canvas = document.createElement("canvas");
   canvas.id = "bg-canvas";
   canvas.style.position = "absolute";
@@ -447,18 +459,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Zeichnet Hintergrund (Himmel, Gras, Wolken ...)
   function drawBackground() {
-
     const w = canvas.width;
     const h = canvas.height;
 
     // Löscht alles was vorher war
     ctx.clearRect(0, 0, w, h);
 
-    // Zeichnet Himmel 
+    // Zeichnet Himmel
     ctx.fillStyle = "#b7e3ff";
     ctx.fillRect(0, 0, w, Math.floor(h * 0.7)); // Rechteck oben 70% hoch
 
-    // Zeichnet Gras 
+    // Zeichnet Gras
     ctx.fillStyle = "#2e7d32";
     ctx.fillRect(0, Math.floor(h * 0.7), w, Math.ceil(h * 0.3)); // Rechteck unten 30% hoch
 
@@ -477,12 +488,28 @@ document.addEventListener("DOMContentLoaded", () => {
     drawMushroom(ctx, w * 0.85, h * 0.87, 20, 25);
   }
 
-  // Zeichnet Wolke 
+  // Zeichnet Wolke
   function drawCloud(ctx, x, y, width, height) {
     ctx.beginPath();
     ctx.ellipse(x, y, width, height, 0, 0, Math.PI * 2);
-    ctx.ellipse(x + width * 0.5, y + 10, width * 0.7, height * 0.7, 0, 0, Math.PI * 2);
-    ctx.ellipse(x - width * 0.5, y + 10, width * 0.7, height * 0.7, 0, 0, Math.PI * 2);
+    ctx.ellipse(
+      x + width * 0.5,
+      y + 10,
+      width * 0.7,
+      height * 0.7,
+      0,
+      0,
+      Math.PI * 2,
+    );
+    ctx.ellipse(
+      x - width * 0.5,
+      y + 10,
+      width * 0.7,
+      height * 0.7,
+      0,
+      0,
+      Math.PI * 2,
+    );
     ctx.fill(); // Fülle mit der aktuellen Farbe (weiß)
   }
 
@@ -497,7 +524,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.fill();
   }
 
-  // Zeichnet Pilz 
+  // Zeichnet Pilz
   function drawMushroom(ctx, x, y, width, height) {
     ctx.fillStyle = "#fbe9e7"; // Heller Stiel
     ctx.fillRect(x - width / 4, y - height, width / 2, height);
@@ -508,7 +535,6 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.fill();
   }
 
-  
   // 17. DRAG & DROP BURGER
 
   // setzt das Fütter-System auf
@@ -519,7 +545,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Erstelle oder finde den draggbaren Burger
     let dragBurger = document.getElementById("dragging-burger");
-    if (!dragBurger) { // gibt es Burger schon? Wenn nein erstellt er einen
+    if (!dragBurger) {
+      // gibt es Burger schon? Wenn nein erstellt er einen
       dragBurger = document.createElement("span");
       dragBurger.id = "dragging-burger";
       dragBurger.textContent = "🍔";
@@ -531,7 +558,7 @@ document.addEventListener("DOMContentLoaded", () => {
         fontSize: "50px", // Größe von Burger
         display: "none", // Am Anfang versteckt
         zIndex: 9999, // Ganz vorne
-        touchAction: "none" // Verhindere Browser-Gesten
+        touchAction: "none", // Verhindere Browser-Gesten
       });
       document.body.appendChild(dragBurger);
     }
@@ -540,12 +567,13 @@ document.addEventListener("DOMContentLoaded", () => {
     feedBtn.style.touchAction = "none";
 
     let dragging = false; // Ist der Benutzer gerade beim Dragging?
-    let offsetX = 0, offsetY = 0; // Versatz vom Mauszeiger zum Burger
+    let offsetX = 0,
+      offsetY = 0; // Versatz vom Mauszeiger zum Burger
 
     // Bewegt Burger zur Mausposition
     function moveAt(clientX, clientY) {
-      dragBurger.style.left = (clientX - offsetX + window.scrollX) + "px";
-      dragBurger.style.top = (clientY - offsetY + window.scrollY) + "px";
+      dragBurger.style.left = clientX - offsetX + window.scrollX + "px";
+      dragBurger.style.top = clientY - offsetY + window.scrollY + "px";
     }
 
     // Startet das Dragging
@@ -580,24 +608,30 @@ document.addEventListener("DOMContentLoaded", () => {
       const pR = pet.getBoundingClientRect();
 
       // Prüft ob Burger über Pet ist (Kollisionserkennung)
-      const hit = !(bR.right < pR.left || bR.left > pR.right ||
-        bR.bottom < pR.top || bR.top > pR.bottom);
+      const hit = !(
+        bR.right < pR.left ||
+        bR.left > pR.right ||
+        bR.bottom < pR.top ||
+        bR.top > pR.bottom
+      );
 
       if (hit) {
-        // BÄR WURDE GEFÜTTERT! 
+        // BÄR WURDE GEFÜTTERT!
 
         changeStat("hunger", 20); // +20 Hunger
 
         // Spielt Ess-Geräusch ab
         const eatSound = new Audio("assets/sound_eating.mp3");
-        eatSound.play().catch(() => { });
+        eatSound.play().catch(() => {});
       }
 
       dragBurger.style.display = "none"; // Verstecke Burger
     }
 
     // Event-Handler für Pointerup (Maus loslassen)
-    function onPointerUp(e) { endDrag(e.clientX, e.clientY); }
+    function onPointerUp(e) {
+      endDrag(e.clientX, e.clientY);
+    }
 
     // Wenn Benutzer auf Fütter-Button klickt/tippt startet Drag
     feedBtn.addEventListener("pointerdown", (ev) => {
@@ -606,5 +640,4 @@ document.addEventListener("DOMContentLoaded", () => {
       startDrag(r.left + r.width / 2, r.top + r.height / 2);
     });
   })();
-
-}); 
+});
