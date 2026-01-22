@@ -94,7 +94,7 @@ cells.forEach((cell, index) => {
 
             // PRÜFT OB SPIEL UNENTSCHIEDEN IST
             if (checkDraw()) {
-                statusDisplay.textContent = '🤝 Unentschieden!';
+                statusDisplay.textContent = '🤝🏼 Unentschieden!';
                 gameActive = false; // Beendet das Spiel
                 return; // Stoppt hier
             }
@@ -150,7 +150,7 @@ function computerMove() {
 
     //  PRÜFT OB SPIEL UNENTSCHIEDEN IST
     if (checkDraw()) {
-        statusDisplay.textContent = '🤝 Unentschieden!';
+        statusDisplay.textContent = '🤝🏼 Unentschieden!';
         gameActive = false; // Beende das Spiel
         return; // Stoppt hier
     }

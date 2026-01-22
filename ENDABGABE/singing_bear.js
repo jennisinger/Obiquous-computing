@@ -3,13 +3,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 1. ELEMENTE FINDEN  
   
-  // Bären-Bild 
+  // Sucht Bären-Bild (damit wir wissen wo es ist)
   const bearImage = document.getElementById('bearImage');
 
-  // Audio-Element 
+  // Sucht Audio-Element (Musik-Player für das Lied)
   const audioPlayer = document.getElementById('audioPlayer');
 
-  // "Zurück"-Button 
+  // Sucht "Zurück"-Button (um zur Hauptseite zu gehen)
   const backBtn = document.getElementById('back-btn');
 
 
